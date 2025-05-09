@@ -76,11 +76,6 @@ enum FsStatus {
     DELETING = 2;
 }
 
-message FsDetail {
-    optional common.Volume volume = 1;
-    optional common.S3Info s3Info = 2;
-}
-
 message Mountpoint {
     required string hostname = 1;
     required uint32 port = 2;
@@ -94,17 +89,16 @@ message FsInfo {
     required FsStatus status = 3;
     required uint64 rootInodeId = 4;
     required uint64 capacity = 5;
-    required uint64 blockSize = 6;
-    required uint32 mountNum = 7;
-    repeated Mountpoint mountpoints = 8;
-    required common.FSType fsType = 9;
-    required FsDetail detail = 10;
-    required bool enableSumInDir = 11;
-    required string owner = 12;
-    optional uint64 txSequence = 13;
-    optional string txOwner = 14;
-    optional uint32 recycleTimeHour =15;
-    optional string uuid = 16;
+    required uint64 block_size = 6;
+    required uint64 chunk_size = 7;
+    required uint32 mountNum = 8;
+    repeated Mountpoint mountpoints = 9;
+    required common.StorageInfo storage_info= 10;
+    required string owner = 11;
+    optional uint64 txSequence = 12;
+    optional string txOwner = 13;
+    optional uint32 recycleTimeHour =14;
+    optional string uuid = 15;
 }
 
 message GetFsInfoResponse {
@@ -114,13 +108,12 @@ message GetFsInfoResponse {
 
 message CreateFsRequest {
     required string fsName = 1;
-    required uint64 blockSize = 2;
-    required common.FSType fsType = 3;
-    required FsDetail fsDetail = 4;
-    required bool enableSumInDir = 5;
-    required string owner = 6;
-    required uint64 capacity = 7;
-    optional uint32 recycleTimeHour = 8;
+    required uint64 block_size = 2;
+    required uint64 chunk_size = 3;
+    required common.StorageInfo storage_info = 4;
+    required string owner = 5;
+    required uint64 capacity = 6;
+    optional uint32 recycleTimeHour = 7;
 }
 
 message CreateFsResponse {
