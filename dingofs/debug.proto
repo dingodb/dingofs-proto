@@ -40,7 +40,7 @@ message GetPartitionRequest {
 
   uint32 fs_id = 10;
   // optional, if empty, return all partitions
-  uint64 parent_ino = 11;
+  uint64 parent = 11;
   // optional, if empty, return all children
   string name = 12;
 

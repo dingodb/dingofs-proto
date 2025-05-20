@@ -166,9 +166,11 @@ message Chunk {
   // chunk index
   uint64 index = 1;
   // chunk size
-  uint64 size = 2;
+  uint64 chunk_size = 2;
+  // block size
+  uint64 block_size = 3;
   // slice list
-  repeated Slice slices = 3;
+  repeated Slice slices = 4;
 
   uint64 version = 10;
 }
@@ -176,7 +178,7 @@ message Chunk {
 message Dentry {
   uint32 fs_id = 1;
   uint64 ino = 2;
-  uint64 parent_ino = 3;
+  uint64 parent = 3;
   string name = 4;
   uint32 flag = 5;
   FileType type = 6;
@@ -198,7 +200,7 @@ message Inode {
   uint64 rdev = 16;
   uint32 dtime = 17;
   uint32 openmpcount = 18;
-  repeated uint64 parent_inos = 19;
+  repeated uint64 parents = 19;
 
   map<string, bytes> xattrs = 21;
 
@@ -626,7 +628,7 @@ message LookupRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  uint64 parent_ino = 11;
+  uint64 parent = 11;
   string name = 12;
 }
 
@@ -648,7 +650,7 @@ message MkNodRequest {
   uint32 uid = 14;
   uint32 gid = 15;
   uint32 mode = 16;
-  uint64 parent_ino = 18;
+  uint64 parent = 18;
   uint64 rdev = 19;
 }
 
@@ -670,7 +672,7 @@ message MkDirRequest {
   uint32 uid = 14;
   uint32 gid = 15;
   uint32 mode = 16;
-  uint64 parent_ino = 18;
+  uint64 parent = 18;
   uint64 rdev = 19;
 }
 
@@ -686,30 +688,13 @@ message RmDirRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  uint64 parent_ino = 11;
+  uint64 parent = 11;
   string name = 12;
 }
 
 message RmDirResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
-}
-
-message OpenDirRequest {
-  RequestInfo info = 1;
-  Context context = 2;
-
-  uint32 fs_id = 10;
-  uint64 ino = 11;
-}
-
-
-message OpenDirResponse {
-  ResponseInfo info = 1;
-  dingofs.pb.error.Error error = 2;
-
-  // the file handle of the dir
-  uint64 file_handle = 10;
 }
 
 
@@ -728,7 +713,6 @@ message ReadDirRequest {
   bool is_refresh = 15;
 }
 
-
 message ReadDirResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
@@ -740,21 +724,6 @@ message ReadDirResponse {
   }
   
   repeated Entry entries = 10;
-}
-
-
-message ReleaseDirRequest {
-  RequestInfo info = 1;
-  Context context = 2;
-
-  uint32 fs_id = 10;
-  uint64 ino = 11;
-  uint64 file_handle = 12;
-}
-
-message ReleaseDirResponse {
-  ResponseInfo info = 1;
-  dingofs.pb.error.Error error = 2;
 }
 
 message FileSession {
@@ -799,7 +768,7 @@ message LinkRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
-  uint64 new_parent_ino = 12;
+  uint64 new_parent = 12;
   string new_name = 13;
 }
 
@@ -815,8 +784,8 @@ message UnLinkRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  string name = 11;
-  uint64 parent_ino = 12;
+  uint64 parent = 11;
+  string name = 12;
 }
 
 message UnLinkResponse {
@@ -830,11 +799,11 @@ message SymlinkRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  string symlink = 11;
-  uint64 new_parent_ino = 12;
-  string new_name = 13;
-  uint32 uid = 14;
-  uint32 gid = 15;
+  uint64 new_parent = 11;
+  string new_name = 12;
+  uint32 uid = 13;
+  uint32 gid = 14;
+  string symlink = 15;
 }
 
 message SymlinkResponse {
@@ -950,9 +919,9 @@ message RenameRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  uint64 old_parent_ino = 11;
+  uint64 old_parent = 11;
   string old_name = 12;
-  uint64 new_parent_ino = 13;
+  uint64 new_parent = 13;
   string new_name = 14;
 }
 
@@ -1024,7 +993,7 @@ message TrashSlice {
   uint64 ino = 2;
   uint64 chunk_index = 3;
   uint64 slice_id = 4;
-  uint64 chunk_size = 5;
+  uint64 block_size = 5;
 
   bool is_partial = 7;
   repeated Range ranges = 8;
@@ -1034,7 +1003,7 @@ message TrashSliceList {
   repeated TrashSlice slices = 1;
 }
 
-message CompactRequest {
+message CompactChunkRequest {
   RequestInfo info = 1;
   Context context = 2;
 
@@ -1044,30 +1013,29 @@ message CompactRequest {
   uint64 chunk_index = 12;
 }
 
-message CompactResponse {
+message CompactChunkResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
   repeated TrashSlice trash_slices = 10;
 }
 
-message CompactAllRequest {
+message CleanTrashSliceRequest {
   RequestInfo info = 1;
   Context context = 2;
 
   uint32 fs_id = 10;
+  uint64 ino = 11;
+  // 0 means all chunks
+  uint64 chunk_index = 12;
 }
 
-message CompactAllResponse {
+message CleanTrashSliceResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
-
-  uint64 checked_count = 10;
-  uint64 compacted_count = 11;
 }
 
-
-message CleanTrashFileDataRequest {
+message CleanDelFileRequest {
   RequestInfo info = 1;
   Context context = 2;
 
@@ -1075,7 +1043,7 @@ message CleanTrashFileDataRequest {
   uint64 ino = 11;
 }
 
-message CleanTrashFileDataResponse {
+message CleanDelFileResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 }
@@ -1187,9 +1155,7 @@ service MDSService {
   rpc MkNod(MkNodRequest) returns (MkNodResponse);
   rpc MkDir(MkDirRequest) returns (MkDirResponse);
   rpc RmDir(RmDirRequest) returns (RmDirResponse);
-  rpc OpenDir(OpenDirRequest) returns (OpenDirResponse); // deprecated
   rpc ReadDir(ReadDirRequest) returns (ReadDirResponse);
-  rpc ReleaseDir(ReleaseDirRequest) returns (ReleaseDirResponse); // deprecated
 
   rpc Open(OpenRequest) returns (OpenResponse);
   rpc Release(ReleaseRequest) returns (ReleaseResponse);
@@ -1213,9 +1179,9 @@ service MDSService {
   rpc ReadSlice(ReadSliceRequest) returns (ReadSliceResponse);
 
   // compact interface
-  rpc Compact(CompactRequest) returns (CompactResponse);
-  rpc CompactAll(CompactAllRequest) returns (CompactAllResponse);
-  rpc CleanTrashFileData(CleanTrashFileDataRequest) returns (CleanTrashFileDataResponse);
+  rpc CompactChunk(CompactChunkRequest) returns (CompactChunkResponse);
+  rpc CleanTrashSlice(CleanTrashSliceRequest) returns (CleanTrashSliceResponse);
+  rpc CleanDelFile(CleanDelFileRequest) returns (CleanDelFileResponse);
 
   // quota interface
   rpc SetFsQuota(SetFsQuotaRequest) returns (SetFsQuotaResponse);
