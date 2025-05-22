@@ -94,8 +94,17 @@ message S3Info {
   uint32 object_prefix = 7;
 }
 
+message RadosInfo {
+  string mon_host = 1;
+  string user_name = 2;
+  string key = 3;
+  string pool_name = 4;
+  string cluster_name = 5;
+}
+
 message FsExtra {
   S3Info s3_info = 1;
+  RadosInfo rados_info = 2;
 }
 
 message MonoPartition {
