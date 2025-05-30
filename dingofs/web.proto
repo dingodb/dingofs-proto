@@ -23,15 +23,7 @@ option go_package = "dingofs/proto/web";
 message FsStatRequest {};
 message FsStatResponse {};
 
-
-message MdsStatRequest {};
-message MdsStatResponse {};
-
 service FsStatService {
   rpc default_method(FsStatRequest) returns (FsStatResponse);
 }
 
-
-service MdsStatService {
-  rpc default_method(MdsStatRequest) returns (MdsStatResponse);
-}

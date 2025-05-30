@@ -38,22 +38,24 @@ message MDS {
     NORMAL = 1;
     ABNORMAL = 2;
   }
+ 
 
   int64 id = 1;
   Location location = 2;
 
   State state = 4;
 
-  uint64 register_time_ms = 10;
-  uint64 last_online_time_ms = 11;
+  uint64 last_online_time_ms = 10;
+  bool is_online = 11;
 }
 
 message Client {
-  string hostname = 1;
-  uint32 port = 2;
-  string path = 3;
+  string id = 1;
+  string hostname = 2;
+  uint32 port = 3;
+  string mountpoint = 4;
 
-  uint64 last_online_time_ms = 4;
+  uint64 last_online_time_ms = 10;
 }
 
 enum FsType {
@@ -264,6 +266,9 @@ message Context {
 
   // host:port:path
   string client_id = 10;
+
+  // ino list from node to root
+  repeated uint64 ancestors = 11;
 }
 
 message HeartbeatRequest {
@@ -365,7 +370,9 @@ message GetFsInfoRequest {
   RequestInfo info = 1;
   Context context = 2;
 
+  // fs name or fs id
   string fs_name = 10;
+  uint32 fs_id = 11;
 }
 
 message GetFsInfoResponse {
@@ -932,6 +939,9 @@ message RenameRequest {
   string old_name = 12;
   uint64 new_parent = 13;
   string new_name = 14;
+
+  repeated uint64 old_ancestors = 20;
+  repeated uint64 new_ancestors = 21;
 }
 
 message RenameResponse {
@@ -1195,12 +1205,12 @@ service MDSService {
   // quota interface
   rpc SetFsQuota(SetFsQuotaRequest) returns (SetFsQuotaResponse);
   rpc GetFsQuota(GetFsQuotaRequest) returns (GetFsQuotaResponse);
-  rpc FlushFsUsage(FlushFsUsageRequest) returns (FlushFsUsageResponse);
+  rpc FlushFsUsage(FlushFsUsageRequest) returns (FlushFsUsageResponse); // deprecated
   rpc SetDirQuota(SetDirQuotaRequest) returns (SetDirQuotaResponse);
   rpc GetDirQuota(GetDirQuotaRequest) returns (GetDirQuotaResponse);
   rpc DeleteDirQuota(DeleteDirQuotaRequest) returns (DeleteDirQuotaResponse);
   rpc LoadDirQuotas(LoadDirQuotasRequest) returns (LoadDirQuotasResponse);
-  rpc FlushDirUsages(FlushDirUsagesRequest) returns (FlushDirUsagesResponse);
+  rpc FlushDirUsages(FlushDirUsagesRequest) returns (FlushDirUsagesResponse); // deprecated
 
 
   // fs statistics
