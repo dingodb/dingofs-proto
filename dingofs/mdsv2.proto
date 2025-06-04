@@ -974,9 +974,10 @@ message WriteSliceRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  uint64 ino = 11;
-  int64 chunk_index = 12;
-  repeated Slice slices = 13;
+  uint64 parent = 11;
+  uint64 ino = 12;
+  int64 chunk_index = 13;
+  repeated Slice slices = 14;
 }
 
 message WriteSliceResponse {
