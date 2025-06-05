@@ -675,6 +675,7 @@ message MkNodResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode inode = 10;
+  uint64 parent_version = 11;
 }
 
 message MkDirRequest {
@@ -697,6 +698,7 @@ message MkDirResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode inode = 10;
+  uint64 parent_version = 11;
 }
 
 message RmDirRequest {
@@ -711,6 +713,8 @@ message RmDirRequest {
 message RmDirResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
+
+  uint64 parent_version = 10;
 }
 
 
@@ -793,6 +797,7 @@ message LinkResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode inode = 10;
+  uint64 parent_version = 11;
 }
 
 message UnLinkRequest {
@@ -807,6 +812,8 @@ message UnLinkRequest {
 message UnLinkResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
+
+  uint64 parent_version = 10;
 }
 
 
@@ -827,6 +834,7 @@ message SymlinkResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode inode = 10;
+  uint64 parent_version = 11;
 }
 
 message ReadLinkRequest {
