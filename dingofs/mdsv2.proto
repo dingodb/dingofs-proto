@@ -407,20 +407,6 @@ message UpdateFsInfoResponse {
   dingofs.pb.error.Error error = 2;
 }
 
-message RefreshFsInfoRequest {
-  RequestInfo info = 1;
-  Context context = 2;
-
-  // fs name or fs id
-  string fs_name = 10;
-  uint32 fs_id = 11;
-}
-
-message RefreshFsInfoResponse {
-  ResponseInfo info = 1;
-  dingofs.pb.error.Error error = 2;
-}
-
 // dentry interface
 message GetDentryRequest {
   RequestInfo info = 1;
@@ -1140,15 +1126,43 @@ message CheckAliveResponse {
   dingofs.pb.error.Error error = 2;
 }
 
-message RefreshInodeRequest {
+message NotifyBuddyRequest {
   RequestInfo info = 1;
   Context context = 2;
 
-  uint32 fs_id = 10;
-  repeated uint64 inoes = 11;
+
+  enum Type {
+    TYPE_REFRESH_FS_INFO = 0;
+    TYPE_REFRESH_INODE = 1;
+  }
+
+  message RefreshFsInfo {
+    string fs_name = 1;
+  }
+
+  message RefreshInode {
+    Inode inode = 1;
+  }
+
+
+  message Message {
+    // message id
+    uint64 id = 1;
+    Type type = 2;
+    uint32 fs_id = 3;
+    
+    oneof payload {
+      RefreshFsInfo refresh_fs_info = 100;
+      RefreshInode refresh_inode = 101;
+    }
+  }
+
+  // notify id
+  uint64 id = 10;
+  repeated Message messages = 11;
 }
 
-message RefreshInodeResponse {
+message NotifyBuddyResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 }
@@ -1166,7 +1180,6 @@ service MDSService {
   rpc GetFsInfo(GetFsInfoRequest) returns (GetFsInfoResponse);
   rpc ListFsInfo(ListFsInfoRequest) returns (ListFsInfoResponse);
   rpc UpdateFsInfo(UpdateFsInfoRequest) returns (UpdateFsInfoResponse);
-  rpc RefreshFsInfo(RefreshFsInfoRequest) returns (RefreshFsInfoResponse);
 
   // dentry interface
   rpc GetDentry(GetDentryRequest) returns (GetDentryResponse);
@@ -1229,5 +1242,5 @@ service MDSService {
 
   // internal interface
   rpc CheckAlive(CheckAliveRequest) returns (CheckAliveResponse);
-  rpc RefreshInode(RefreshInodeRequest) returns (RefreshInodeResponse);
+  rpc NotifyBuddy(NotifyBuddyRequest) returns (NotifyBuddyResponse);
 }
