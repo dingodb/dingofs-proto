@@ -22,9 +22,10 @@ option go_package = "dingofs/proto/blockcache";
 enum BlockCacheErrCode {
     BlockCacheOk = 0;
     BlockCacheErrUnknown = 1;
-    BlockCacheErrFailure = 2;
-    BlockCacheErrIOError = 3;
-    BlockCacheErrNotFound = 4;
+    BlockCacheErrInvalidParam = 2;
+    BlockCacheErrNotFound = 3;
+    BlockCacheErrFailure = 4;
+    BlockCacheErrIOError = 5;
 };
 
 message BlockKey {
@@ -33,6 +34,15 @@ message BlockKey {
     required uint64 id = 3;
     required uint64 index = 4;
     required uint64 version = 5;
+};
+
+message PutRequest {
+    required BlockKey block_key = 1;
+    required uint64 block_size = 2;
+};
+
+message PutResponse {
+ required BlockCacheErrCode status = 1;
 };
 
 message RangeRequest {
@@ -46,6 +56,27 @@ message RangeResponse {
  required BlockCacheErrCode status = 1;
 };
 
+message CacheRequest {
+    required BlockKey block_key = 1;
+    required uint64 block_size = 2;
+};
+
+message CacheResponse {
+ required BlockCacheErrCode status = 1;
+};
+
+message PrefetchRequest {
+    required BlockKey block_key = 1;
+    required uint64 block_size = 2;
+};
+
+message PrefetchResponse {
+ required BlockCacheErrCode status = 1;
+};
+
 service BlockCacheService {
+    rpc Put(PutRequest) returns (PutResponse);
     rpc Range(RangeRequest) returns (RangeResponse);
+    rpc Cache(CacheRequest) returns (CacheResponse);
+    rpc Prefetch(PrefetchRequest) returns (PrefetchResponse);
 };

@@ -35,16 +35,29 @@ enum CacheGroupMemberStatus {
     CacheGroupMemberStatusOffline = 3;
 };
 
+enum FileSystemType {
+    FileSystemTypeLocal = 0;
+    FileSystemType3FS = 1;
+};
+
+message LocalAccess {
+    required string root_dir = 1;
+    required FileSystemType filesystem_type = 2;
+    required string lock_path = 3;
+};
+
 message CacheGroupMember {
     required uint64 id = 1;
     required string ip = 2;
     required uint32 port = 3;
     required uint32 weight = 4;
+    optional LocalAccess local_access = 5;
 };
 
-message CacheGroupNodeMeta {
-    required uint64 member_id = 1;
-    required uint64 birth_time = 2;
+message CacheGroupNodeMetadata {
+    required uint64 birth_time = 1;
+    required uint64 member_id = 2;
+    required string member_uuid = 3;
 };
 
 message RegisterMemberRequest {
