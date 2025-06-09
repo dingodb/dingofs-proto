@@ -253,6 +253,7 @@ message ResponseInfo {
   TimeInfo time = 1;
   CacheInfo cache = 2;
   repeated TxnInfo txns = 3;
+  Location redirect_location = 4;
 }
 
 message Context {
@@ -342,7 +343,7 @@ message UmountFsRequest {
   Context context = 2;
 
   string fs_name = 10;
-  MountPoint mount_point = 11;
+  string client_id = 11;
 }
 
 message UmountFsResponse {
@@ -433,7 +434,7 @@ message ListDentryRequest {
   uint64 parent = 11;
   // the name of last entry
   string last = 12;
-  // the number of entry
+  // the number of entry, default is UINT32_MAX
   uint32 limit = 13;
   // is only list dir
   bool is_only_dir = 14;
@@ -453,6 +454,8 @@ message GetInodeRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
+  // if true, only get inode basic attr, not xattr/chunks
+  bool just_basic = 12;
 }
 
 message GetInodeResponse {
@@ -468,6 +471,8 @@ message BatchGetInodeRequest {
 
   uint32 fs_id = 10;
   repeated uint64 inoes = 11;
+  // if true, only get inode basic attr, not xattr/chunks
+  bool just_basic = 12;
 }
 
 message BatchGetInodeResponse {
@@ -1134,6 +1139,7 @@ message NotifyBuddyRequest {
   enum Type {
     TYPE_REFRESH_FS_INFO = 0;
     TYPE_REFRESH_INODE = 1;
+    TYPE_CLEAN_PARTITION_CACHE = 2;
   }
 
   message RefreshFsInfo {
@@ -1142,6 +1148,11 @@ message NotifyBuddyRequest {
 
   message RefreshInode {
     Inode inode = 1;
+  }
+
+  message CleanPartitionCache {
+    uint32 fs_id = 1;
+    uint64 Ino = 2;
   }
 
 
@@ -1154,6 +1165,7 @@ message NotifyBuddyRequest {
     oneof payload {
       RefreshFsInfo refresh_fs_info = 100;
       RefreshInode refresh_inode = 101;
+      CleanPartitionCache clean_partition_cache = 102;
     }
   }
 
