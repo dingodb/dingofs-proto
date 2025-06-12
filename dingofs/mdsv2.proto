@@ -912,6 +912,8 @@ message SetXAttrRequest {
 message SetXAttrResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
+
+  uint64 inode_version = 10;
 }
 
 message ListXAttrRequest {
