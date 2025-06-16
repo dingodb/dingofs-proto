@@ -44,6 +44,7 @@ enum Errno {
   EPARTIAL_SUCCESS = 10019;
   EQUOTA_ILLEGAL = 10020;
   EQUOTA_EXCEED = 10021;
+  ENO_PERMISSION = 10022;
 
   
   // cache error

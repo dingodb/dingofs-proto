@@ -757,6 +757,7 @@ message OpenResponse {
   dingofs.pb.error.Error error = 2;
 
   string session_id = 10;
+  uint64 version = 11;
 }
 
 message ReleaseRequest {
@@ -1002,6 +1003,30 @@ message ReadSliceResponse {
   repeated Slice slices = 10;
 }
 
+message FallocateRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint32 fs_id = 10;
+  uint64 ino = 11;
+
+  // 0: default
+  // FALLOC_FL_KEEP_SIZE
+  // FALLOC_FL_PUNCH_HOLE
+  // FALLOC_FL_COLLAPSE_RANGE
+  // FALLOC_FL_ZERO_RANGE
+  int32 mode = 12;
+  // file offset
+  uint64 offset = 13;
+  // file logic length
+  uint64 len = 14;
+}
+
+message FallocateResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+}
+
 message TrashSlice {
   message Range {
     // file offset
@@ -1232,6 +1257,9 @@ service MDSService {
   rpc AllocSliceId(AllocSliceIdRequest) returns (AllocSliceIdResponse);
   rpc WriteSlice(WriteSliceRequest) returns (WriteSliceResponse);
   rpc ReadSlice(ReadSliceRequest) returns (ReadSliceResponse);
+  
+  // fallocate interface
+  rpc Fallocate(FallocateRequest) returns (FallocateResponse);
 
   // compact interface
   rpc CompactChunk(CompactChunkRequest) returns (CompactChunkResponse);
