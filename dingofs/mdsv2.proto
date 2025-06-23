@@ -505,8 +505,8 @@ message BatchGetXAttrResponse {
 // quota interface
 
 message Quota {
-  uint64 max_bytes = 1;
-  uint64 max_inodes = 2;
+  int64 max_bytes = 1;
+  int64 max_inodes = 2;
   int64 used_bytes = 3;
   int64 used_inodes = 4;
 };
@@ -1028,6 +1028,8 @@ message FallocateRequest {
 message FallocateResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
+
+  Inode inode = 10;
 }
 
 message TrashSlice {
@@ -1043,6 +1045,7 @@ message TrashSlice {
   uint64 chunk_index = 3;
   uint64 slice_id = 4;
   uint64 block_size = 5;
+  uint64 chunk_size = 6;
 
   bool is_partial = 7;
   repeated Range ranges = 8;
