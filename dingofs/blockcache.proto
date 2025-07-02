@@ -74,9 +74,14 @@ message PrefetchResponse {
  required BlockCacheErrCode status = 1;
 };
 
+message PingRequest {};
+
+message PingResponse {};
+
 service BlockCacheService {
     rpc Put(PutRequest) returns (PutResponse);
     rpc Range(RangeRequest) returns (RangeResponse);
     rpc Cache(CacheRequest) returns (CacheResponse);
     rpc Prefetch(PrefetchRequest) returns (PrefetchResponse);
+    rpc Ping(PingRequest) returns (PingResponse);
 };
