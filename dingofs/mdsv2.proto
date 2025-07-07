@@ -170,7 +170,7 @@ message Slice {
   // file size in object storage
   uint64 size = 5;
   bool zero = 6;
-};
+}
 
 
 message Chunk {
