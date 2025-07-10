@@ -215,8 +215,6 @@ message Inode {
 
   map<string, bytes> xattrs = 21;
 
-  map<uint64, Chunk> chunks = 22;
-
   // when change field, need to update version
   uint64 version = 30;
 }
@@ -454,8 +452,6 @@ message GetInodeRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
-  // if true, only get inode basic attr, not xattr/chunks
-  bool just_basic = 12;
 }
 
 message GetInodeResponse {
@@ -471,8 +467,6 @@ message BatchGetInodeRequest {
 
   uint32 fs_id = 10;
   repeated uint64 inoes = 11;
-  // if true, only get inode basic attr, not xattr/chunks
-  bool just_basic = 12;
 }
 
 message BatchGetInodeResponse {
