@@ -22,6 +22,49 @@ package dingofs.pb.debug;
 option cc_generic_services = true;
 option go_package = "dingofs/proto/debug";
 
+enum LogLevel {
+  DEBUG = 0;
+  INFO = 1;
+  WARNING = 2;
+  ERROR = 3;
+  FATAL = 4;
+}
+
+message LogDetail {
+  // Sets the maximum number of seconds which logs may be buffered for.
+  uint32 log_buf_secs = 1;
+  // Sets the maximum log file size (in MB)
+  uint32 max_log_size = 2;
+  // Sets whether to avoid logging to the disk if the disk is full.
+  bool stop_logging_if_full_disk = 3;
+  // set verbose
+  uint32 verbose = 4;
+}
+
+message GetLogLevelRequest {
+  dingofs.pb.mdsv2.RequestInfo info = 1;
+};
+
+message GetLogLevelResponse {
+  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  LogLevel log_level = 3;
+  LogDetail log_detail = 4;
+};
+
+message ChangeLogLevelRequest {
+  dingofs.pb.mdsv2.RequestInfo info = 1;
+  LogLevel log_level = 2;
+  LogDetail log_detail = 3;
+};
+
+message ChangeLogLevelResponse {
+  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+};
+
+
 message GetFsRequest {
   dingofs.pb.mdsv2.RequestInfo info = 1;
 
@@ -99,6 +142,10 @@ message GetOpenFileResponse {
 }
 
 service DebugService {
+  rpc GetLogLevel(GetLogLevelRequest) returns (GetLogLevelResponse);
+  rpc ChangeLogLevel(ChangeLogLevelRequest) returns (ChangeLogLevelResponse);
+
+
   rpc GetFs(GetFsRequest) returns (GetFsResponse);
   rpc GetPartition(GetPartitionRequest) returns (GetPartitionResponse);
   rpc GetInode(GetInodeRequest) returns (GetInodeResponse);
