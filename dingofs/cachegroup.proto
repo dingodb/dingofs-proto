@@ -35,17 +35,6 @@ enum CacheGroupMemberState {
     CacheGroupMemberStateOffline = 3;
 };
 
-enum FileSystemType {
-    FileSystemTypeLocal = 0;
-    FileSystemType3FS = 1;
-};
-
-message LocalAccess {
-    required string root_dir = 1;
-    required FileSystemType filesystem_type = 2;
-    required string lock_path = 3;
-};
-
 message CacheGroupMember {
     required uint64 id = 1;
     required string ip = 2;
@@ -113,10 +102,17 @@ message HeartbeatResponse {
     required CacheGroupErrCode status = 1;
 };
 
+message LoadGroupsRequest {};
+
+message LoadGroupsResponse {
+    repeated string group_names = 1;
+};
+
 service CacheGroupMemberService {
     rpc RegisterMember(RegisterMemberRequest) returns (RegisterMemberResponse);
     rpc AddMember(AddMemberRequest) returns (AddMemberResponse);
     rpc LoadMembers(LoadMembersRequest) returns (LoadMembersResponse);
     rpc ReweightMember(ReweightMemberRequest) returns (ReweightMemberResponse);
     rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
+    rpc LoadGroups(LoadGroupsRequest) returns (LoadGroupsResponse);
 };
