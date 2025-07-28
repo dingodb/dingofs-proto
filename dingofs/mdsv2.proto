@@ -21,7 +21,6 @@ package dingofs.pb.mdsv2;
 option cc_generic_services = true;
 option go_package = "dingofs/proto/mdsv2";
 
-
 enum Role {
   ROLE_MDS = 0;
   ROLE_CLIENT = 1;
@@ -37,6 +36,7 @@ message MDS {
     INIT = 0;
     NORMAL = 1;
     ABNORMAL = 2;
+    STOP = 3;
   }
  
 
@@ -110,8 +110,7 @@ message FsExtra {
 }
 
 message MonoPartition {
-  uint64 epoch = 1;
-  uint64 mds_id = 2;
+  uint64 mds_id = 1;
 }
 
 message HashPartition {
@@ -119,15 +118,15 @@ message HashPartition {
     repeated uint32 bucket_ids = 1;
   }
 
-  uint64 epoch = 1;
   // can't modify after create
-  uint32 bucket_num = 2;
+  uint32 bucket_num = 1;
   // mdsid -> bucketset
-  map<uint64, BucketSet> distributions = 3;
+  map<uint64, BucketSet> distributions = 2;
 }
 
 message PartitionPolicy {
   PartitionType type = 1;
+  uint64 epoch = 2;
 
   oneof partition {
     MonoPartition mono = 10;
@@ -157,6 +156,8 @@ message FsInfo {
 
   bool is_deleted = 40;
   uint64 delete_time_s = 41;
+
+  uint64 version = 50;
 }
 
 message Slice {
@@ -1222,6 +1223,86 @@ message NotifyBuddyResponse {
   dingofs.pb.error.Error error = 2;
 }
 
+message FsOpLog {
+  enum Type {
+    CREATE_FS = 0;
+    JOIN_FS = 1;
+    QUIT_FS = 2;
+    DELETE_FS = 3;
+  }
+
+  message CreateFs {}
+  message JoinFs {
+    repeated uint64 mds_ids = 1;
+  }
+  message QuitFs {
+    repeated uint64 mds_ids = 1;
+  }
+  message DeleteFs {}
+
+  string fs_name = 1;
+  uint32 fs_id = 2;
+
+  Type type = 3;
+  uint64 epoch = 4;
+  string comment = 5;
+
+  oneof config {
+    CreateFs create_fs = 10;
+    JoinFs join_fs = 11;
+    QuitFs quit_fs = 12;
+    DeleteFs delete_fs = 13;
+  }
+
+  uint64 time_ms = 20;
+}
+
+message JoinFsRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  // fs name or fs id just one of them
+  uint32 fs_id = 10;
+  string fs_name = 11;
+  repeated uint64 mds_ids = 12;
+}
+
+message JoinFsResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  uint64 epoch = 10;
+}
+
+message QuitFsRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  // fs name or fs id just one of them
+  uint32 fs_id = 10;
+  string fs_name = 11;
+  repeated uint64 mds_ids = 12;
+}
+
+message QuitFsResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  uint64 epoch = 10;
+}
+
+message StopMdsRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint64 mds_id = 10;
+}
+
+message StopMdsResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+}
+
 service MDSService {
   // mds
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
@@ -1302,4 +1383,8 @@ service MDSService {
   // internal interface
   rpc CheckAlive(CheckAliveRequest) returns (CheckAliveResponse);
   rpc NotifyBuddy(NotifyBuddyRequest) returns (NotifyBuddyResponse);
+
+  rpc JoinFs(JoinFsRequest) returns (JoinFsResponse);
+  rpc QuitFs(QuitFsRequest) returns (QuitFsResponse);
+  rpc StopMds(StopMdsRequest) returns (StopMdsResponse);
 }
