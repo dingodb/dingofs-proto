@@ -54,6 +54,7 @@ message RangeRequest {
 
 message RangeResponse {
  required BlockCacheErrCode status = 1;
+ optional bool cache_hit = 2;
 };
 
 message CacheRequest {
