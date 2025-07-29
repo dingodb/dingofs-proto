@@ -914,6 +914,22 @@ message SetXAttrResponse {
   uint64 inode_version = 10;
 }
 
+message RemoveXAttrRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint32 fs_id = 10;
+  uint64 ino = 11;
+  string name = 12;
+}
+
+message RemoveXAttrResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  uint64 inode_version = 10;
+}
+
 message ListXAttrRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -1249,6 +1265,7 @@ service MDSService {
   rpc SetAttr(SetAttrRequest) returns (SetAttrResponse);
   rpc GetXAttr(GetXAttrRequest) returns (GetXAttrResponse);
   rpc SetXAttr(SetXAttrRequest) returns (SetXAttrResponse);
+  rpc RemoveXAttr(RemoveXAttrRequest) returns (RemoveXAttrResponse);
   rpc ListXAttr(ListXAttrRequest) returns (ListXAttrResponse);
 
   rpc Rename(RenameRequest) returns (RenameResponse);
