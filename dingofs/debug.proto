@@ -133,12 +133,20 @@ message GetOpenFileResponse {
   dingofs.pb.mdsv2.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  message OpenFile {
-    uint64 ino = 1;
-    uint32 ref_count = 2;
-  }
+  repeated dingofs.pb.mdsv2.FileSession file_sessions = 10;
+}
 
-  repeated OpenFile open_files = 10;
+message TraceWorkerSetRequest {
+  dingofs.pb.mdsv2.RequestInfo info = 1;
+
+  string name = 10; // workerset name
+}
+
+message TraceWorkerSetResponse {
+  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  string trace = 10;
 }
 
 service DebugService {
@@ -151,4 +159,6 @@ service DebugService {
   rpc GetInode(GetInodeRequest) returns (GetInodeResponse);
 
   rpc GetOpenFile(GetOpenFileRequest) returns (GetOpenFileResponse);
+
+  rpc TraceWorkerSet(TraceWorkerSetRequest) returns (TraceWorkerSetResponse);
 }
