@@ -24,8 +24,7 @@ enum CacheGroupErrCode {
     CacheGroupErrUnknown = 1;
     CacheGroupErrFailure = 2;
     CacheGroupErrNotFound = 3;
-    CacheGroupErrInvalidMemberId = 4;
-    CacheGroupErrInvalidGroupName = 5;
+    CacheGroupErrInvalidParam = 4;
 };
 
 enum CacheGroupMemberState {
@@ -37,65 +36,42 @@ enum CacheGroupMemberState {
 
 message CacheGroupMember {
     required uint64 id = 1;
+    required string uuid = 2;
+    required string ip = 3;
+    required uint32 port = 4;
+    required uint32 weight = 5;
+    required uint64 last_online_time_ms = 6;
+    required CacheGroupMemberState state = 7;
+    optional string group_name = 8; // belong to which cache group
+};
+
+message JoinCacheGroupRequest {
+    required string group_name = 1;
     required string ip = 2;
     required uint32 port = 3;
     required uint32 weight = 4;
-    optional uint64 last_online_time_ms = 5;
-    optional CacheGroupMemberState state = 6;
+    optional uint64 replace_id = 5;
 };
 
-message CacheGroupNodeMetadata {
-    required uint64 birth_time = 1;
-    required uint64 member_id = 2;
-    required string member_uuid = 3;
-};
-
-message RegisterMemberRequest {
-    optional uint64 old_id = 1;
-};
-
-message RegisterMemberResponse {
+message JoinCacheGroupResponse {
     required CacheGroupErrCode status = 1;
     optional uint64 member_id = 2;
+    optional string member_uuid = 3;
 };
 
-message AddMemberRequest {
+message LeaveCacheGroupRequest {
     required string group_name = 1;
-    required CacheGroupMember member = 2;
+    required string ip = 2;
+    required uint32 port = 3;
 };
 
-message AddMemberResponse {
-    required CacheGroupErrCode status = 1;
-};
-
-message LoadMembersRequest {
-    required string group_name = 1;
-};
-
-message LoadMembersResponse {
-    required CacheGroupErrCode status = 1;
-    repeated CacheGroupMember members = 2;
-};
-
-message ReweightMemberRequest {
-    required string group_name = 1;
-    required uint64 member_id = 2;
-    required uint32 weight = 3;
-};
-
-message ReweightMemberResponse {
+message LeaveCacheGroupResponse {
     required CacheGroupErrCode status = 1;
 };
 
 message HeartbeatRequest {
-    message Statistic {
-        required uint64 hits = 1;
-        required uint64 misses = 2;
-    };
-
-    required string group_name = 1;
-    required uint64 member_id = 2;
-    required Statistic stat = 3;
+    required string ip = 1;
+    required uint32 port = 2;
 };
 
 message HeartbeatResponse {
@@ -108,11 +84,29 @@ message LoadGroupsResponse {
     repeated string group_names = 1;
 };
 
+message LoadMembersRequest {
+    required string group_name = 1;
+};
+
+message LoadMembersResponse {
+    required CacheGroupErrCode status = 1;
+    repeated CacheGroupMember members = 2;
+};
+
+message ReweightMemberRequest {
+    required uint64 member_id = 1;
+    required uint32 weight = 2;
+};
+
+message ReweightMemberResponse {
+    required CacheGroupErrCode status = 1;
+};
+
 service CacheGroupMemberService {
-    rpc RegisterMember(RegisterMemberRequest) returns (RegisterMemberResponse);
-    rpc AddMember(AddMemberRequest) returns (AddMemberResponse);
-    rpc LoadMembers(LoadMembersRequest) returns (LoadMembersResponse);
-    rpc ReweightMember(ReweightMemberRequest) returns (ReweightMemberResponse);
+    rpc JoinCacheGroup(JoinCacheGroupRequest) returns (JoinCacheGroupResponse);
+    rpc LeaveCacheGroup(LeaveCacheGroupRequest) returns (LeaveCacheGroupResponse);
     rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc LoadGroups(LoadGroupsRequest) returns (LoadGroupsResponse);
+    rpc LoadMembers(LoadMembersRequest) returns (LoadMembersResponse);
+    rpc ReweightMember(ReweightMemberRequest) returns (ReweightMemberResponse);
 };
