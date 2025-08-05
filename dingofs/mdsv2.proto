@@ -1228,7 +1228,8 @@ message FsOpLog {
     CREATE_FS = 0;
     JOIN_FS = 1;
     QUIT_FS = 2;
-    DELETE_FS = 3;
+    QUIT_AND_JOIN_FS = 3;
+    DELETE_FS = 4;
   }
 
   message CreateFs {}
@@ -1237,6 +1238,10 @@ message FsOpLog {
   }
   message QuitFs {
     repeated uint64 mds_ids = 1;
+  }
+  message QuitAndJoinFs {
+    repeated uint64 quit_mds_ids = 1;
+    repeated uint64 join_mds_ids = 2;
   }
   message DeleteFs {}
 
@@ -1251,7 +1256,8 @@ message FsOpLog {
     CreateFs create_fs = 10;
     JoinFs join_fs = 11;
     QuitFs quit_fs = 12;
-    DeleteFs delete_fs = 13;
+    QuitAndJoinFs quit_and_join_fs = 13;
+    DeleteFs delete_fs = 14;
   }
 
   uint64 time_ms = 20;
