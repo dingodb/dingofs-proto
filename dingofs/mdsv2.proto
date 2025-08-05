@@ -185,6 +185,7 @@ message Chunk {
   repeated Slice slices = 4;
 
   uint64 version = 10;
+  uint64 last_compaction_time_ms = 11;
 }
 
 message Dentry {
