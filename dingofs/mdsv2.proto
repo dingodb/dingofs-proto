@@ -1065,6 +1065,7 @@ message TrashSlice {
 
 message TrashSliceList {
   repeated TrashSlice slices = 1;
+  uint64 time_ms = 2;
 }
 
 message CompactChunkRequest {
@@ -1073,7 +1074,6 @@ message CompactChunkRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
-  // 0 means all chunks
   uint64 chunk_index = 12;
 }
 
