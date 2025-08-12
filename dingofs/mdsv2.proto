@@ -222,7 +222,7 @@ message Inode {
 }
 
 message RequestInfo {
-  uint64 request_id = 1;
+  string request_id = 1;
 }
 
 message TimeInfo {
@@ -539,21 +539,6 @@ message GetFsQuotaResponse {
   Quota quota = 10;
 };
 
-message FlushFsUsageRequest {
-  RequestInfo info = 1;
-  Context context = 2;
-
-  uint32 fs_id = 10;
-  Usage usage = 11;
-};
-
-message FlushFsUsageResponse {
-  ResponseInfo info = 1;
-  dingofs.pb.error.Error error = 2;
-
-  Quota quota = 10;
-};
-
 message SetDirQuotaRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -608,20 +593,6 @@ message LoadDirQuotasResponse {
   dingofs.pb.error.Error error = 2;
 
   map<uint64, Quota> quotas = 10;
-};
-
-message FlushDirUsagesRequest {
-  RequestInfo info = 1;
-  Context context = 2;
-
-  uint32 fs_id = 10;
-  // ino -> usage
-  map<uint64, Usage> usages = 11;
-};
-
-message FlushDirUsagesResponse {
-  ResponseInfo info = 1;
-  dingofs.pb.error.Error error = 2;
 };
 
 // high level interface
@@ -1374,12 +1345,10 @@ service MDSService {
   // quota interface
   rpc SetFsQuota(SetFsQuotaRequest) returns (SetFsQuotaResponse);
   rpc GetFsQuota(GetFsQuotaRequest) returns (GetFsQuotaResponse);
-  rpc FlushFsUsage(FlushFsUsageRequest) returns (FlushFsUsageResponse); // deprecated
   rpc SetDirQuota(SetDirQuotaRequest) returns (SetDirQuotaResponse);
   rpc GetDirQuota(GetDirQuotaRequest) returns (GetDirQuotaResponse);
   rpc DeleteDirQuota(DeleteDirQuotaRequest) returns (DeleteDirQuotaResponse);
   rpc LoadDirQuotas(LoadDirQuotasRequest) returns (LoadDirQuotasResponse);
-  rpc FlushDirUsages(FlushDirUsagesRequest) returns (FlushDirUsagesResponse); // deprecated
 
 
   // fs statistics
