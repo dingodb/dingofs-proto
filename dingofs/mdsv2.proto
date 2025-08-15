@@ -728,6 +728,7 @@ message OpenResponse {
 
   string session_id = 10;
   uint64 version = 11;
+  repeated Chunk chunks = 12;
 }
 
 message ReleaseRequest {
