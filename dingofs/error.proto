@@ -20,7 +20,7 @@ option go_package = "dingofs/proto/error";
 
 enum Errno {
   OK = 0;
-  
+
   // common error
   EINTERNAL = 10000;
   EILLEGAL_PARAMTETER = 10001;
@@ -45,8 +45,9 @@ enum Errno {
   EQUOTA_ILLEGAL = 10020;
   EQUOTA_EXCEED = 10021;
   ENO_PERMISSION = 10022;
+  ELOCKED = 10023;
+  ENOT_MATCH = 10024;
 
-  
   // cache error
 
   // backend store error

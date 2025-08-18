@@ -24,6 +24,7 @@ option go_package = "dingofs/proto/mdsv2";
 enum Role {
   ROLE_MDS = 0;
   ROLE_CLIENT = 1;
+  ROLE_CACHE_MEMBER = 2;
 }
 
 message Location {
@@ -38,7 +39,6 @@ message MDS {
     ABNORMAL = 2;
     STOP = 3;
   }
- 
 
   int64 id = 1;
   Location location = 2;
@@ -58,8 +58,27 @@ message Client {
   uint64 last_online_time_ms = 10;
 }
 
+enum CacheGroupMemberState {
+  CacheGroupMemberStateUnknown = 0;
+  CacheGroupMemberStateOnline = 1;
+  CacheGroupMemberStateUnstable = 2;
+  CacheGroupMemberStateOffline = 3;
+};
+
+message CacheGroupMember {
+  string member_id = 1;
+  string ip = 2;
+  uint32 port = 3;
+  uint32 weight = 4;
+  uint64 create_time_s = 5;
+  uint64 last_online_time_ms = 6;
+  CacheGroupMemberState state = 7;
+  optional string group_name = 8; // belong to which cache group
+  bool locked = 9;                // member_id bind ip:port
+};
+
 enum FsType {
-  S3 = 0; //  use s3 as backend data store
+  S3 = 0;    //  use s3 as backend data store
   RADOS = 1; // use ceph rados as backend data store
 }
 
@@ -109,14 +128,10 @@ message FsExtra {
   RadosInfo rados_info = 2;
 }
 
-message MonoPartition {
-  uint64 mds_id = 1;
-}
+message MonoPartition { uint64 mds_id = 1; }
 
 message HashPartition {
-  message BucketSet {
-    repeated uint32 bucket_ids = 1;
-  }
+  message BucketSet { repeated uint32 bucket_ids = 1; }
 
   // can't modify after create
   uint32 bucket_num = 1;
@@ -173,7 +188,6 @@ message Slice {
   bool zero = 6;
 }
 
-
 message Chunk {
   // chunk index
   uint64 index = 1;
@@ -221,9 +235,7 @@ message Inode {
   uint64 version = 30;
 }
 
-message RequestInfo {
-  string request_id = 1;
-}
+message RequestInfo { string request_id = 1; }
 
 message TimeInfo {
   message ElapsedTime {
@@ -280,6 +292,7 @@ message HeartbeatRequest {
   oneof node {
     MDS mds = 20;
     Client client = 21;
+    CacheGroupMember cache_group_member = 22;
   }
 }
 
@@ -417,7 +430,6 @@ message GetDentryRequest {
   uint64 parent = 11;
   string name = 12;
 }
-
 
 message GetDentryResponse {
   ResponseInfo info = 1;
@@ -675,7 +687,6 @@ message RmDirResponse {
   uint64 parent_version = 10;
 }
 
-
 message ReadDirRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -700,7 +711,7 @@ message ReadDirResponse {
     uint64 ino = 2;
     Inode inode = 3;
   }
-  
+
   repeated Entry entries = 10;
 }
 
@@ -727,7 +738,7 @@ message OpenResponse {
   dingofs.pb.error.Error error = 2;
 
   string session_id = 10;
-  Inode inode = 11; 
+  Inode inode = 11;
   repeated Chunk chunks = 12;
 }
 
@@ -778,7 +789,6 @@ message UnLinkResponse {
 
   uint64 parent_version = 10;
 }
-
 
 message SymlinkRequest {
   RequestInfo info = 1;
@@ -869,7 +879,7 @@ message GetXAttrResponse {
   dingofs.pb.error.Error error = 2;
 
   bytes value = 10;
-} 
+}
 
 message SetXAttrRequest {
   RequestInfo info = 1;
@@ -1084,15 +1094,14 @@ message CleanDelFileResponse {
   dingofs.pb.error.Error error = 2;
 }
 
-
 message FsStatsData {
-  uint64 read_bytes= 1;
+  uint64 read_bytes = 1;
   uint64 read_qps = 2;
-  uint64 write_bytes= 3;
+  uint64 write_bytes = 3;
   uint64 write_qps = 4;
-  uint64 s3_read_bytes= 5;
+  uint64 s3_read_bytes = 5;
   uint64 s3_read_qps = 6;
-  uint64 s3_write_bytes= 7;
+  uint64 s3_write_bytes = 7;
   uint64 s3_write_qps = 8;
 }
 
@@ -1152,33 +1161,27 @@ message NotifyBuddyRequest {
   RequestInfo info = 1;
   Context context = 2;
 
-
   enum Type {
     TYPE_REFRESH_FS_INFO = 0;
     TYPE_REFRESH_INODE = 1;
     TYPE_CLEAN_PARTITION_CACHE = 2;
   }
 
-  message RefreshFsInfo {
-    string fs_name = 1;
-  }
+  message RefreshFsInfo { string fs_name = 1; }
 
-  message RefreshInode {
-    Inode inode = 1;
-  }
+  message RefreshInode { Inode inode = 1; }
 
   message CleanPartitionCache {
     uint32 fs_id = 1;
     uint64 Ino = 2;
   }
 
-
   message Message {
     // message id
     uint64 id = 1;
     Type type = 2;
     uint32 fs_id = 3;
-    
+
     oneof payload {
       RefreshFsInfo refresh_fs_info = 100;
       RefreshInode refresh_inode = 101;
@@ -1206,12 +1209,8 @@ message FsOpLog {
   }
 
   message CreateFs {}
-  message JoinFs {
-    repeated uint64 mds_ids = 1;
-  }
-  message QuitFs {
-    repeated uint64 mds_ids = 1;
-  }
+  message JoinFs { repeated uint64 mds_ids = 1; }
+  message QuitFs { repeated uint64 mds_ids = 1; }
   message QuitAndJoinFs {
     repeated uint64 quit_mds_ids = 1;
     repeated uint64 join_mds_ids = 2;
@@ -1282,6 +1281,85 @@ message StopMdsResponse {
   dingofs.pb.error.Error error = 2;
 }
 
+// cache group interface
+message ReweightMemberRequest {
+  RequestInfo info = 1;
+
+  string member_id = 2;
+  string ip = 3;
+  uint32 port = 4;
+  uint32 weight = 5;
+};
+
+message ReweightMemberResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+};
+
+message ListMembersRequest {
+  RequestInfo info = 1;
+
+  optional string group_name = 2; // if not set, list all members
+};
+
+message ListMembersResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  repeated CacheGroupMember members = 3;
+};
+
+message JoinCacheGroupRequest {
+  RequestInfo info = 1;
+
+  string member_id = 2;
+  string ip = 3;
+  uint32 port = 4;
+  string group_name = 5;
+  uint32 weight = 6;
+};
+
+message JoinCacheGroupResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+};
+
+message LeaveCacheGroupRequest {
+  RequestInfo info = 1;
+
+  string member_id = 2;
+  string ip = 3;
+  uint32 port = 4;
+  string group_name = 5;
+};
+
+message LeaveCacheGroupResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+};
+
+message ListGroupsRequest { RequestInfo info = 1; };
+
+message ListGroupsResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  repeated string group_names = 3;
+};
+
+message UnLockMemberRequest {
+  RequestInfo info = 1;
+
+  string member_id = 2;
+  string ip = 3;
+  uint32 port = 4;
+};
+
+message UnLockMemberResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+};
+
 service MDSService {
   // mds
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
@@ -1304,7 +1382,7 @@ service MDSService {
   rpc GetInode(GetInodeRequest) returns (GetInodeResponse);
   rpc BatchGetInode(BatchGetInodeRequest) returns (BatchGetInodeResponse);
   rpc BatchGetXAttr(BatchGetXAttrRequest) returns (BatchGetXAttrResponse);
-  
+
   // high level interface
   rpc Lookup(LookupRequest) returns (LookupResponse);
 
@@ -1334,7 +1412,7 @@ service MDSService {
   rpc AllocSliceId(AllocSliceIdRequest) returns (AllocSliceIdResponse);
   rpc WriteSlice(WriteSliceRequest) returns (WriteSliceResponse);
   rpc ReadSlice(ReadSliceRequest) returns (ReadSliceResponse);
-  
+
   // fallocate interface
   rpc Fallocate(FallocateRequest) returns (FallocateResponse);
 
@@ -1351,11 +1429,11 @@ service MDSService {
   rpc DeleteDirQuota(DeleteDirQuotaRequest) returns (DeleteDirQuotaResponse);
   rpc LoadDirQuotas(LoadDirQuotasRequest) returns (LoadDirQuotasResponse);
 
-
   // fs statistics
   rpc SetFsStats(SetFsStatsRequest) returns (SetFsStatsResponse);
   rpc GetFsStats(GetFsStatsRequest) returns (GetFsStatsResponse);
-  rpc GetFsPerSecondStats(GetFsPerSecondStatsRequest) returns (GetFsPerSecondStatsResponse);
+  rpc GetFsPerSecondStats(GetFsPerSecondStatsRequest)
+      returns (GetFsPerSecondStatsResponse);
 
   // internal interface
   rpc CheckAlive(CheckAliveRequest) returns (CheckAliveResponse);
@@ -1364,4 +1442,12 @@ service MDSService {
   rpc JoinFs(JoinFsRequest) returns (JoinFsResponse);
   rpc QuitFs(QuitFsRequest) returns (QuitFsResponse);
   rpc StopMds(StopMdsRequest) returns (StopMdsResponse);
+
+  // cache group member interface
+  rpc JoinCacheGroup(JoinCacheGroupRequest) returns (JoinCacheGroupResponse);
+  rpc LeaveCacheGroup(LeaveCacheGroupRequest) returns (LeaveCacheGroupResponse);
+  rpc ListGroups(ListGroupsRequest) returns (ListGroupsResponse);
+  rpc ReweightMember(ReweightMemberRequest) returns (ReweightMemberResponse);
+  rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
+  rpc UnlockMember(UnLockMemberRequest) returns (UnLockMemberResponse);
 }
