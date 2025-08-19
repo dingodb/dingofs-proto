@@ -190,7 +190,7 @@ message Slice {
 
 message Chunk {
   // chunk index
-  uint64 index = 1;
+  uint32 index = 1;
   // chunk size
   uint64 chunk_size = 2;
   // block size
@@ -731,6 +731,7 @@ message OpenRequest {
   uint32 fs_id = 10;
   uint64 ino = 11;
   uint32 flags = 12;
+  bool prefetch_chunk = 13;
 }
 
 message OpenResponse {
@@ -895,7 +896,7 @@ message SetXAttrResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  uint64 inode_version = 10;
+  Inode inode = 10;
 }
 
 message RemoveXAttrRequest {
@@ -911,7 +912,7 @@ message RemoveXAttrResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  uint64 inode_version = 10;
+  Inode inode = 10;
 }
 
 message ListXAttrRequest {
@@ -969,14 +970,19 @@ message AllocSliceIdResponse {
 }
 
 message WriteSliceRequest {
+  message DeltaSlice {
+    uint64 chunk_index = 1;
+    repeated Slice slices = 2;
+  }
+
   RequestInfo info = 1;
   Context context = 2;
 
   uint32 fs_id = 10;
   uint64 parent = 11;
   uint64 ino = 12;
-  int64 chunk_index = 13;
-  repeated Slice slices = 14;
+
+  repeated DeltaSlice delta_slices = 15;
 }
 
 message WriteSliceResponse {
@@ -990,14 +996,14 @@ message ReadSliceRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
-  int64 chunk_index = 12;
+  repeated uint64 chunk_indexes = 13;
 }
 
 message ReadSliceResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  repeated Slice slices = 10;
+  repeated Chunk chunks = 10;
 }
 
 message FallocateRequest {
@@ -1032,6 +1038,7 @@ message TrashSlice {
     uint64 offset = 1;
     // file logic length
     uint64 len = 2;
+    uint64 compaction_version = 3;
   }
 
   uint32 fs_id = 1;
