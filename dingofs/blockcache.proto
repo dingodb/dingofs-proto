@@ -14,7 +14,7 @@
 //
 
 syntax="proto2";
-package dingofs.pb.cache.blockcache;
+package dingofs.pb.cache;
 
 option cc_generic_services = true;
 option go_package = "dingofs/proto/blockcache";
