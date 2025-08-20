@@ -1360,6 +1360,17 @@ message UnLockMemberResponse {
   dingofs.pb.error.Error error = 2;
 };
 
+message DeleteMemberRequest {
+  RequestInfo info = 1;
+
+  string member_id = 2;
+};
+
+message DeleteMemberResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+};
+
 service MDSService {
   // mds
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
@@ -1450,4 +1461,5 @@ service MDSService {
   rpc ReweightMember(ReweightMemberRequest) returns (ReweightMemberResponse);
   rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
   rpc UnlockMember(UnLockMemberRequest) returns (UnLockMemberResponse);
+  rpc DeleteMember(DeleteMemberRequest) returns (DeleteMemberResponse);
 }
