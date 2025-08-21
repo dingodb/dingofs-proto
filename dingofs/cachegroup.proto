@@ -66,6 +66,14 @@ message DeregisterMemberResponse {
     required CacheGroupErrCode status = 1;
 };
 
+message DeleteMemberIdRequest {
+    required string member_id = 1;
+};
+
+message DeleteMemberIdResponse {
+    required CacheGroupErrCode status = 1;
+};
+
 message HeartbeatRequest {
     required string ip = 1;
     required uint32 port = 2;
@@ -125,6 +133,7 @@ message ListGroupsResponse {
 service CacheGroupMemberService {
     rpc RegisterMember(RegisterMemberRequest) returns (RegisterMemberResponse);
     rpc DeregisterMember(DeregisterMemberRequest) returns (DeregisterMemberResponse);
+    rpc DeleteMemberId(DeleteMemberIdRequest) returns (DeleteMemberIdResponse);
     rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
     rpc ReweightMember(ReweightMemberRequest) returns (ReweightMemberResponse);
     rpc ListMembers(ListMembersRequest) returns (ListMembersResponse);
