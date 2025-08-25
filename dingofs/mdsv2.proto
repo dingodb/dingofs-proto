@@ -178,13 +178,13 @@ message FsInfo {
 message Slice {
   // slice id
   uint64 id = 1;
-  uint64 compaction_version = 2;
+  uint32 compaction_version = 2;
   // file offset
   uint64 offset = 3;
   // file logic length
-  uint64 len = 4;
+  uint32 len = 4;
   // file size in object storage
-  uint64 size = 5;
+  uint32 size = 5;
   bool zero = 6;
 }
 
