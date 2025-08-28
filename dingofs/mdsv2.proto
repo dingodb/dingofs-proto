@@ -75,6 +75,9 @@ message CacheGroupMember {
   CacheGroupMemberState state = 7;
   optional string group_name = 8; // belong to which cache group
   bool locked = 9;                // member_id bind ip:port
+
+  // when change field, need to update version
+  uint64 version = 30;
 };
 
 enum FsType {
