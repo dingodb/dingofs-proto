@@ -140,6 +140,8 @@ message HashPartition {
   uint32 bucket_num = 1;
   // mdsid -> bucketset
   map<uint64, BucketSet> distributions = 2;
+
+  uint32 expect_mds_num = 5;
 }
 
 message PartitionPolicy {
@@ -333,6 +335,7 @@ message CreateFsRequest {
   uint64 capacity = 17;
   uint32 recycle_time_hour = 18;
   PartitionType partition_type = 19;
+  uint32 expect_mds_num = 20; // for hash partition
 }
 
 message CreateFsResponse {
@@ -522,12 +525,15 @@ message Quota {
   int64 used_bytes = 3;
   int64 used_inodes = 4;
 
+  string uuid = 9;
   uint64 version = 10;
+  uint64 create_time_ns = 11;
 };
 
 message Usage {
   int64 bytes = 1;
   int64 inodes = 2;
+  uint64 time_ns = 5;
 };
 
 message SetFsQuotaRequest {
@@ -1178,6 +1184,8 @@ message NotifyBuddyRequest {
     TYPE_REFRESH_FS_INFO = 0;
     TYPE_REFRESH_INODE = 1;
     TYPE_CLEAN_PARTITION_CACHE = 2;
+    TYPE_SET_DIR_QUOTA = 3;
+    TYPE_DELETE_DIR_QUOTA = 4;
   }
 
   message RefreshFsInfo { string fs_name = 1; }
@@ -1187,6 +1195,16 @@ message NotifyBuddyRequest {
   message CleanPartitionCache {
     uint32 fs_id = 1;
     uint64 Ino = 2;
+  }
+
+  message SetDirQuota {
+    uint64 ino = 1;
+    Quota quota = 2;
+  }
+
+  message DeleteDirQuota {
+    uint64 ino = 1;
+    string uuid = 2;
   }
 
   message Message {
@@ -1199,6 +1217,8 @@ message NotifyBuddyRequest {
       RefreshFsInfo refresh_fs_info = 100;
       RefreshInode refresh_inode = 101;
       CleanPartitionCache clean_partition_cache = 102;
+      SetDirQuota set_dir_quota = 103;
+      DeleteDirQuota delete_dir_quota = 104;
     }
   }
 
