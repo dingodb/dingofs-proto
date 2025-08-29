@@ -322,6 +322,7 @@ message CreateFsRequest {
   RequestInfo info = 1;
   Context context = 2;
 
+  uint32 fs_id = 9; // optional
   string fs_name = 10;
   uint64 block_size = 11;
   uint64 chunk_size = 12;
