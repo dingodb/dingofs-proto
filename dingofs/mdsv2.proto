@@ -520,6 +520,8 @@ message Quota {
   int64 max_inodes = 2;
   int64 used_bytes = 3;
   int64 used_inodes = 4;
+
+  uint64 version = 10;
 };
 
 message Usage {
