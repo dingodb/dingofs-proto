@@ -47,6 +47,7 @@ enum Errno {
   ENO_PERMISSION = 10022;
   ELOCKED = 10023;
   ENOT_MATCH = 10024;
+  EINVALID_STATE = 10025;
 
   // cache error
 
