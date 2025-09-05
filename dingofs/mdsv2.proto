@@ -54,6 +54,7 @@ message Client {
   string hostname = 2;
   uint32 port = 3;
   string mountpoint = 4;
+  string fs_name = 5;
 
   uint64 last_online_time_ms = 10;
 }
@@ -86,9 +87,10 @@ enum FsType {
 }
 
 enum FsStatus {
-  NEW = 0;
-  INITED = 1;
-  DELETING = 2;
+  INIT = 0;
+  NORMAL = 1;
+  DELETED = 2;
+  RECYCLING = 3; 
 }
 
 enum PartitionType {
@@ -154,6 +156,10 @@ message PartitionPolicy {
   }
 }
 
+message RecycleProgress {
+  uint64 last_ino = 1;
+}
+
 message FsInfo {
   uint32 fs_id = 1;
   string fs_name = 2;
@@ -167,9 +173,11 @@ message FsInfo {
   PartitionPolicy partition_policy = 10;
   bool enable_sum_in_dir = 12; // enable sum in dir
   string owner = 13;
-  uint32 recycle_time_hour = 15;
   string uuid = 16;
   FsExtra extra = 20;
+
+  uint32 recycle_time_hour = 15;
+  RecycleProgress recycle_progress = 23;
 
   uint64 create_time_s = 30;
   uint64 last_update_time_ns = 31;
