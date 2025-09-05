@@ -27,3 +27,9 @@ service FsStatService {
   rpc default_method(FsStatRequest) returns (FsStatResponse);
 }
 
+message FuseStatRequest {};
+message FuseStatResponse {};
+
+service FuseStatService {
+  rpc default_method(FuseStatRequest) returns (FuseStatResponse);
+}
