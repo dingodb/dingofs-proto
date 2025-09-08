@@ -55,6 +55,7 @@ message Client {
   uint32 port = 3;
   string mountpoint = 4;
   string fs_name = 5;
+  string ip = 6;
 
   uint64 last_online_time_ms = 10;
 }
