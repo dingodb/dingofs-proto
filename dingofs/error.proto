@@ -48,6 +48,7 @@ enum Errno {
   ELOCKED = 10023;
   ENOT_MATCH = 10024;
   EINVALID_STATE = 10025;
+  ENOT_CAN_CONNECTED = 10026;
 
   // cache error
 
