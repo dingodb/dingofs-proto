@@ -299,6 +299,20 @@ message Context {
   repeated uint64 ancestors = 11;
 }
 
+message EchoRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  string message = 10;
+}
+
+message EchoResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  string message = 10;
+}
+
 message HeartbeatRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -1421,6 +1435,8 @@ message DeleteMemberResponse {
 };
 
 service MDSService {
+  rpc Echo(EchoRequest) returns (EchoResponse);
+
   // mds
   rpc Heartbeat(HeartbeatRequest) returns (HeartbeatResponse);
   rpc GetMDSList(GetMDSListRequest) returns (GetMDSListResponse);
