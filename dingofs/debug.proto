@@ -149,6 +149,24 @@ message TraceWorkerSetResponse {
   string trace = 10;
 }
 
+enum CacheType {
+  CACHE_TYPE_PARTITION = 0;
+  CACHE_TYPE_INODE = 1;
+  CACHE_TYPE_CHUNK = 2;
+}
+
+message CleanCacheRequest {
+  dingofs.pb.mdsv2.RequestInfo info = 1;
+
+  uint32 fs_id = 10;
+  CacheType cache_type = 11;
+}
+
+message CleanCacheResponse {
+  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+}
+
 service DebugService {
   rpc GetLogLevel(GetLogLevelRequest) returns (GetLogLevelResponse);
   rpc ChangeLogLevel(ChangeLogLevelRequest) returns (ChangeLogLevelResponse);
@@ -161,4 +179,6 @@ service DebugService {
   rpc GetOpenFile(GetOpenFileRequest) returns (GetOpenFileResponse);
 
   rpc TraceWorkerSet(TraceWorkerSetRequest) returns (TraceWorkerSetResponse);
+
+  rpc CleanCache(CleanCacheRequest) returns (CleanCacheResponse);
 }
