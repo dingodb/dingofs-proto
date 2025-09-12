@@ -167,6 +167,31 @@ message CleanCacheResponse {
   dingofs.pb.error.Error error = 2;
 }
 
+
+message GetMemoryStatsRequest {
+  dingofs.pb.mdsv2.RequestInfo info = 1;
+
+}
+
+message GetMemoryStatsResponse {
+  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  string memory_stats = 10;
+}
+
+message ReleaseFreeMemoryRequest {
+  dingofs.pb.mdsv2.RequestInfo info = 1;
+
+  bool is_force = 2;
+  double rate = 3;
+}
+
+message ReleaseFreeMemoryResponse {
+  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+}
+
 service DebugService {
   rpc GetLogLevel(GetLogLevelRequest) returns (GetLogLevelResponse);
   rpc ChangeLogLevel(ChangeLogLevelRequest) returns (ChangeLogLevelResponse);
@@ -181,4 +206,8 @@ service DebugService {
   rpc TraceWorkerSet(TraceWorkerSetRequest) returns (TraceWorkerSetResponse);
 
   rpc CleanCache(CleanCacheRequest) returns (CleanCacheResponse);
+
+  // tcmalloc
+  rpc GetMemoryStats(GetMemoryStatsRequest) returns (GetMemoryStatsResponse);
+  rpc ReleaseFreeMemory(ReleaseFreeMemoryRequest) returns (ReleaseFreeMemoryResponse);
 }
