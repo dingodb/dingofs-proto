@@ -661,6 +661,34 @@ message LookupResponse {
   Inode inode = 10;
 }
 
+message BatchCreateRequest {
+  message Param {
+    string name = 1;
+    uint32 flag = 2;
+    uint64 length = 3;
+    uint32 uid = 4;
+    uint32 gid = 5;
+    uint32 mode = 6;
+    uint64 rdev = 7;
+  }
+
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint32 fs_id = 10;
+  uint64 parent = 11;
+  repeated Param params = 12;
+}
+
+message BatchCreateResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  repeated Inode inodes = 10;
+  repeated string session_ids = 11;
+  uint64 parent_version = 12;
+}
+
 message MkNodRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -1461,6 +1489,8 @@ service MDSService {
 
   // high level interface
   rpc Lookup(LookupRequest) returns (LookupResponse);
+
+  rpc BatchCreate(BatchCreateRequest) returns (BatchCreateResponse);
 
   rpc MkNod(MkNodRequest) returns (MkNodResponse);
   rpc MkDir(MkDirRequest) returns (MkDirResponse);
