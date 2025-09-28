@@ -16,10 +16,10 @@ syntax = "proto3";
 
 import "dingofs/error.proto";
 
-package dingofs.pb.mdsv2;
+package dingofs.pb.mds;
 
 option cc_generic_services = true;
-option go_package = "dingofs/proto/mdsv2";
+option go_package = "dingofs/proto/mds";
 
 enum Role {
   ROLE_MDS = 0;

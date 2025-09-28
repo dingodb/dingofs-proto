@@ -15,7 +15,7 @@
 syntax = "proto3";
 
 import "dingofs/error.proto";
-import "dingofs/mdsv2.proto";
+import "dingofs/mds.proto";
 
 package dingofs.pb.debug;
 
@@ -42,11 +42,11 @@ message LogDetail {
 }
 
 message GetLogLevelRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 };
 
 message GetLogLevelResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
   LogLevel log_level = 3;
@@ -54,32 +54,32 @@ message GetLogLevelResponse {
 };
 
 message ChangeLogLevelRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
   LogLevel log_level = 2;
   LogDetail log_detail = 3;
 };
 
 message ChangeLogLevelResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 };
 
 
 message GetFsRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   uint32 fs_id = 10;
 }
 
 message GetFsResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  repeated dingofs.pb.mdsv2.FsInfo fses = 10;
+  repeated dingofs.pb.mds.FsInfo fses = 10;
 }
 
 message GetPartitionRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   uint32 fs_id = 10;
   // optional, if empty, return all partitions
@@ -91,16 +91,16 @@ message GetPartitionRequest {
 }
 
 message GetPartitionResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
   message Entry {
-    dingofs.pb.mdsv2.Dentry dentry = 1;
-    dingofs.pb.mdsv2.Inode inode = 2;
+    dingofs.pb.mds.Dentry dentry = 1;
+    dingofs.pb.mds.Inode inode = 2;
   }
 
   message Partition {
-    dingofs.pb.mdsv2.Inode parent_inode = 1;
+    dingofs.pb.mds.Inode parent_inode = 1;
     repeated Entry entries = 2;
   }
 
@@ -108,7 +108,7 @@ message GetPartitionResponse {
 }
 
 message GetInodeRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   uint32 fs_id = 10;
   bool use_cache = 11; // if true, use cache, otherwise, fetch from storage
@@ -116,34 +116,34 @@ message GetInodeRequest {
 }
 
 message GetInodeResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  repeated dingofs.pb.mdsv2.Inode inodes = 10;
+  repeated dingofs.pb.mds.Inode inodes = 10;
 }
 
 message GetOpenFileRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   uint32 fs_id = 10;
 }
 
 
 message GetOpenFileResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  repeated dingofs.pb.mdsv2.FileSession file_sessions = 10;
+  repeated dingofs.pb.mds.FileSession file_sessions = 10;
 }
 
 message TraceWorkerSetRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   string name = 10; // workerset name
 }
 
 message TraceWorkerSetResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
   string trace = 10;
@@ -156,39 +156,39 @@ enum CacheType {
 }
 
 message CleanCacheRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   uint32 fs_id = 10;
   CacheType cache_type = 11;
 }
 
 message CleanCacheResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 }
 
 
 message GetMemoryStatsRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
 }
 
 message GetMemoryStatsResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
   string memory_stats = 10;
 }
 
 message ReleaseFreeMemoryRequest {
-  dingofs.pb.mdsv2.RequestInfo info = 1;
+  dingofs.pb.mds.RequestInfo info = 1;
 
   bool is_force = 2;
   double rate = 3;
 }
 
 message ReleaseFreeMemoryResponse {
-  dingofs.pb.mdsv2.ResponseInfo info = 1;
+  dingofs.pb.mds.ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 }
 
