@@ -250,7 +250,11 @@ message Inode {
   uint64 version = 30;
 }
 
-message RequestInfo { string request_id = 1; }
+message RequestInfo {
+  string request_id = 1;
+  // client request timeout in milliseconds
+  uint32 timeout_ms = 2;
+}
 
 message TimeInfo {
   message ElapsedTime {
