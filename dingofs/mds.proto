@@ -243,7 +243,7 @@ message Inode {
   uint32 dtime = 17;
   uint32 openmpcount = 18;
   repeated uint64 parents = 19;
-
+  uint32 flags = 20;
   map<string, bytes> xattrs = 21;
 
   // when change field, need to update version
@@ -925,6 +925,7 @@ message SetAttrRequest {
   uint32 uid = 24;
   uint32 gid = 25;
   uint32 mode = 26;
+  uint32 flags = 27;
 }
 
 message SetAttrResponse {
