@@ -364,6 +364,7 @@ message CreateFsRequest {
   uint32 recycle_time_hour = 18;
   PartitionType partition_type = 19;
   uint32 expect_mds_num = 20; // for hash partition
+  repeated uint64 candidate_mds_ids = 21;
 }
 
 message CreateFsResponse {
