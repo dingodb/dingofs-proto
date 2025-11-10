@@ -217,6 +217,11 @@ message Chunk {
   uint64 last_compaction_time_ms = 11;
 }
 
+message ChunkDescriptor {
+  uint32 index = 1;
+  uint64 version = 2;
+}
+
 message Dentry {
   uint32 fs_id = 1;
   uint64 ino = 2;
@@ -1059,6 +1064,8 @@ message WriteSliceRequest {
 message WriteSliceResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
+
+  repeated ChunkDescriptor chunk_descriptors = 10;
 }
 
 message ReadSliceRequest {
@@ -1067,7 +1074,7 @@ message ReadSliceRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
-  repeated uint64 chunk_indexes = 13;
+  repeated ChunkDescriptor chunk_descriptors = 14; // new
 }
 
 message ReadSliceResponse {
