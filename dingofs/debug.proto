@@ -80,6 +80,7 @@ message GetFsResponse {
 
 message GetPartitionRequest {
   dingofs.pb.mds.RequestInfo info = 1;
+  dingofs.pb.mds.Context context = 2;
 
   uint32 fs_id = 10;
   // optional, if empty, return all partitions
@@ -109,6 +110,7 @@ message GetPartitionResponse {
 
 message GetInodeRequest {
   dingofs.pb.mds.RequestInfo info = 1;
+  dingofs.pb.mds.Context context = 2;
 
   uint32 fs_id = 10;
   bool use_cache = 11; // if true, use cache, otherwise, fetch from storage
@@ -124,6 +126,7 @@ message GetInodeResponse {
 
 message GetOpenFileRequest {
   dingofs.pb.mds.RequestInfo info = 1;
+  dingofs.pb.mds.Context context = 2;
 
   uint32 fs_id = 10;
 }
@@ -138,6 +141,7 @@ message GetOpenFileResponse {
 
 message TraceWorkerSetRequest {
   dingofs.pb.mds.RequestInfo info = 1;
+  dingofs.pb.mds.Context context = 2;
 
   string name = 10; // workerset name
 }

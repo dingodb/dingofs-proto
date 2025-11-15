@@ -297,6 +297,8 @@ message Context {
   uint64 epoch = 1;
 
   uint64 inode_version = 3;
+  // readdir after rename use base version to read partition
+  bool use_base_version = 4;
 
   // ignore cache
   bool is_bypass_cache = 5;
@@ -774,6 +776,8 @@ message ReadDirRequest {
   bool with_attr = 14;
 
   bool is_refresh = 15;
+
+  uint64 fh = 16;
 }
 
 message ReadDirResponse {
@@ -786,6 +790,7 @@ message ReadDirResponse {
     Inode inode = 3;
   }
 
+  uint64 count = 9;
   repeated Entry entries = 10;
 }
 
