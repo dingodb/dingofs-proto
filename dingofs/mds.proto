@@ -760,6 +760,7 @@ message RmDirResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
+  uint64 ino = 11;
   uint64 parent_version = 10;
 }
 
