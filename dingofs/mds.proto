@@ -1032,6 +1032,7 @@ message RenameResponse {
 
   uint64 old_parent_version = 10;
   uint64 new_parent_version = 11;
+  repeated uint64 effected_inos = 12;
 }
 
 message AllocSliceIdRequest {
@@ -1071,6 +1072,7 @@ message WriteSliceResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
+  Inode inode = 11;
   repeated ChunkDescriptor chunk_descriptors = 10;
 }
 
