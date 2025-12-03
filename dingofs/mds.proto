@@ -275,6 +275,7 @@ message TimeInfo {
 message CacheInfo {
   bool is_hit_partition = 1;
   bool is_hit_inode = 2;
+  bool is_hit_chunk = 3;
 }
 
 message TxnInfo {
@@ -812,6 +813,7 @@ message OpenRequest {
   uint64 ino = 11;
   uint32 flags = 12;
   bool prefetch_chunk = 13;
+  repeated ChunkDescriptor chunk_descriptors = 14;
 }
 
 message OpenResponse {
@@ -1082,7 +1084,7 @@ message ReadSliceRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
-  repeated ChunkDescriptor chunk_descriptors = 14; // new
+  repeated ChunkDescriptor chunk_descriptors = 14;
 }
 
 message ReadSliceResponse {
