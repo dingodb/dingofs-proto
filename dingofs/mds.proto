@@ -280,7 +280,8 @@ message CacheInfo {
 
 message TxnInfo {
   uint64 txn_id = 1;
-  bool is_one_pc = 2;
+  bool is_one_pc = 2; // deprecated
+  string commit_type = 6;
   bool is_conflict = 3;
   uint64 read_time_us = 4;
   uint64 write_time_us = 5;
