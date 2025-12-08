@@ -45,6 +45,7 @@ message MDS {
 
   State state = 4;
 
+  uint64 create_time_ms = 9;
   uint64 last_online_time_ms = 10;
   bool is_online = 11;
 }
@@ -57,6 +58,7 @@ message Client {
   string fs_name = 5;
   string ip = 6;
 
+  uint64 create_time_ms = 9;
   uint64 last_online_time_ms = 10;
 }
 
