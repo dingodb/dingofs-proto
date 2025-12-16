@@ -78,14 +78,14 @@ message CacheGroupMember {
   uint64 last_online_time_ms = 6;
   CacheGroupMemberState state = 7;
   optional string group_name = 8; // belong to which cache group
-  bool locked = 9;                // member_id bind ip:port
+  bool locked = 9; // member_id bind ip:port
 
   // when change field, need to update version
   uint64 version = 30;
 };
 
 enum FsType {
-  S3 = 0;    //  use s3 as backend data store
+  S3 = 0; //  use s3 as backend data store
   RADOS = 1; // use ceph rados as backend data store
 }
 
@@ -623,6 +623,8 @@ message GetDirQuotaRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
+
+  bool not_use_fs_quota = 12;
 };
 
 message GetDirQuotaResponse {
