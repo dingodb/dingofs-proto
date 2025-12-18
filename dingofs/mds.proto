@@ -267,6 +267,9 @@ message RequestInfo {
   string request_id = 1;
   // client request timeout in milliseconds
   uint32 timeout_ms = 2;
+
+  string trace_id = 3;
+  string span_id = 4;
 }
 
 message TimeInfo {
