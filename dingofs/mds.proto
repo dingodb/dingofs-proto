@@ -87,6 +87,7 @@ message CacheGroupMember {
 enum FsType {
   S3 = 0; //  use s3 as backend data store
   RADOS = 1; // use ceph rados as backend data store
+  LOCALFILE = 2 ; // use local disk as backend data store
 }
 
 enum FsStatus {
@@ -131,9 +132,14 @@ message RadosInfo {
   string cluster_name = 5;
 }
 
+message LocalFileInfo {
+  string path = 1;
+}
+
 message FsExtra {
   S3Info s3_info = 1;
   RadosInfo rados_info = 2;
+  LocalFileInfo file_info =3;
 }
 
 message MonoPartition { uint64 mds_id = 1; }
