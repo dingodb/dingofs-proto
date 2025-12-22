@@ -31,7 +31,7 @@ enum Errno {
   ECOORDINATOR = 10006;
   EBACKEND_STORE = 10007;
   EREQUEST_FULL = 10008;
-  EGEN_FSID = 10009;
+  EALLOC_ID = 10009;
   EREDIRECT = 10010;
   ENOT_EMPTY = 10011;
   ENOT_FILE = 10012;
@@ -50,7 +50,7 @@ enum Errno {
   EINVALID_STATE = 10025;
   ENOT_CAN_CONNECTED = 10026;
   ETIMEOUT = 10027;
-
+  
   // cache error
 
   // backend store error
