@@ -223,7 +223,6 @@ message Chunk {
 
   uint64 version = 10;
   uint64 last_compaction_time_ms = 11;
-  uint64 last_check_time_ms = 12;
 }
 
 message ChunkDescriptor {
