@@ -1036,6 +1036,8 @@ message SetAttrResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode inode = 10;
+  // whether the file is shrunk, mean length < old length
+  bool shrink_file = 11;
 }
 
 message GetXAttrRequest {
