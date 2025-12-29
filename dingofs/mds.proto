@@ -223,6 +223,12 @@ message Chunk {
 
   uint64 version = 10;
   uint64 last_compaction_time_ms = 11;
+
+  message CompactedSlice {
+    repeated uint64 slice_ids = 1;
+    uint64 time_ms = 2;
+  }
+  repeated CompactedSlice compacted_slices = 20;
 }
 
 message ChunkDescriptor {
@@ -270,6 +276,8 @@ message RequestInfo {
 
   string trace_id = 3;
   string span_id = 4;
+
+  uint32 retry_times = 5;
 }
 
 message TimeInfo {
