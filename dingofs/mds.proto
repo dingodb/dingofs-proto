@@ -824,7 +824,7 @@ message BatchMkDirResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode parent_inode = 10;
-  repeated Inode inode = 11;
+  repeated Inode inodes = 11;
 }
 
 message RmDirRequest {
