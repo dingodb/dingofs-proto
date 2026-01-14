@@ -26,3 +26,10 @@ message InodeBlocksResponse {};
 service InodeBlocksService {
   rpc default_method(InodeBlocksRequest) returns (InodeBlocksResponse);
 }
+
+message CompactRequest {};
+message CompactResponse {};
+
+service CompactService {
+  rpc default_method(CompactRequest) returns (CompactResponse);
+}
