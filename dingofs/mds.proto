@@ -221,6 +221,8 @@ message Chunk {
   // slice list
   repeated Slice slices = 4;
 
+  bool just_descriptor = 5;
+
   uint64 version = 10;
   uint64 last_compaction_time_ms = 11;
 
@@ -1198,7 +1200,8 @@ message AllocSliceIdResponse {
 message WriteSliceRequest {
   message DeltaSlice {
     uint64 chunk_index = 1;
-    repeated Slice slices = 2;
+    uint64 curr_version = 2;
+    repeated Slice slices = 3;
   }
 
   RequestInfo info = 1;
@@ -1215,8 +1218,8 @@ message WriteSliceResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  Inode inode = 11;
-  repeated ChunkDescriptor chunk_descriptors = 10;
+  Inode inode = 10;
+  repeated Chunk chunks = 11;
 }
 
 message ReadSliceRequest {
