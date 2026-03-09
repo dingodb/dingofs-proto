@@ -111,9 +111,10 @@ enum FileType {
 message MountPoint {
   string client_id = 1;
   string hostname = 2;
-  uint32 port = 3;
-  string path = 4;
-  bool cto = 5;
+  string ip = 3;
+  uint32 port = 4;
+  string path = 5;
+  bool cto = 6;
 }
 
 message S3Info {
