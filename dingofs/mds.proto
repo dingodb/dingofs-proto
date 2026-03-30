@@ -122,7 +122,6 @@ message S3Info {
   string sk = 2;
   string endpoint = 3;
   string bucketname = 4;
-  uint32 object_prefix = 7;
 }
 
 message RadosInfo {
@@ -200,16 +199,16 @@ message FsInfo {
 }
 
 message Slice {
-  // slice id
-  uint64 id = 1;
-  uint32 compaction_version = 2;
-  // file offset
-  uint64 offset = 3;
-  // file logic length
-  uint32 len = 4;
-  // file size in object storage
-  uint32 size = 5;
-  bool zero = 6;
+    // slice ID (globally unique)
+    uint64 id   = 1;
+    // start byte position within the owning chunk (= file_offset % ChunkSize)
+    uint32 pos  = 2;
+    // total physical data size of the slice (determines number of blocks)
+    uint32 size = 3;
+    // read offset within the slice physical data (core for CopyFileRange/Clone)
+    uint32 off  = 4;
+    // logical length of this mapping
+    uint32 len  = 5;
 }
 
 message Chunk {
