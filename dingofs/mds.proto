@@ -77,24 +77,24 @@ message CacheGroupMember {
   uint64 create_time_s = 5;
   uint64 last_online_time_ms = 6;
   CacheGroupMemberState state = 7;
-  optional string group_name = 8; // belong to which cache group
-  bool locked = 9; // member_id bind ip:port
+  optional string group_name = 8;  // belong to which cache group
+  bool locked = 9;                 // member_id bind ip:port
 
   // when change field, need to update version
   uint64 version = 30;
 };
 
 enum FsType {
-  S3 = 0; //  use s3 as backend data store
-  RADOS = 1; // use ceph rados as backend data store
-  LOCALFILE = 2 ; // use local disk as backend data store
+  S3 = 0;         //  use s3 as backend data store
+  RADOS = 1;      // use ceph rados as backend data store
+  LOCALFILE = 2;  // use local disk as backend data store
 }
 
 enum FsStatus {
   INIT = 0;
   NORMAL = 1;
   DELETED = 2;
-  RECYCLING = 3; 
+  RECYCLING = 3;
 }
 
 enum PartitionType {
@@ -139,13 +139,17 @@ message LocalFileInfo {
 message FsExtra {
   S3Info s3_info = 1;
   RadosInfo rados_info = 2;
-  LocalFileInfo file_info =3;
+  LocalFileInfo file_info = 3;
 }
 
-message MonoPartition { uint64 mds_id = 1; }
+message MonoPartition {
+  uint64 mds_id = 1;
+}
 
 message HashPartition {
-  message BucketSet { repeated uint32 bucket_ids = 1; }
+  message BucketSet {
+    repeated uint32 bucket_ids = 1;
+  }
 
   // can't modify after create
   uint32 bucket_num = 1;
@@ -181,7 +185,7 @@ message FsInfo {
   uint64 chunk_size = 8;
   repeated MountPoint mount_points = 9;
   PartitionPolicy partition_policy = 10;
-  bool enable_sum_in_dir = 12; // enable sum in dir
+  bool enable_sum_in_dir = 12;  // enable sum in dir
   string owner = 13;
   string uuid = 16;
   FsExtra extra = 20;
@@ -273,6 +277,8 @@ message Inode {
 
   // when change field, need to update version
   uint64 version = 30;
+
+  repeated string shard_boundaries = 31;
 }
 
 message RequestInfo {
@@ -305,7 +311,7 @@ message CacheInfo {
 
 message TxnInfo {
   uint64 txn_id = 1;
-  bool is_one_pc = 2; // deprecated
+  bool is_one_pc = 2;  // deprecated
   string commit_type = 6;
   bool is_conflict = 3;
   uint64 read_time_us = 4;
@@ -361,7 +367,7 @@ message HeartbeatRequest {
     uint32 fs_id = 1;
 
     Client client = 2;
-  
+
     // for refresh file session expire time
     repeated FileSession file_sessions = 3;
   }
@@ -400,7 +406,7 @@ message CreateFsRequest {
   RequestInfo info = 1;
   Context context = 2;
 
-  uint32 fs_id = 9; // optional
+  uint32 fs_id = 9;  // optional
   string fs_name = 10;
   uint64 block_size = 11;
   uint64 chunk_size = 12;
@@ -411,7 +417,7 @@ message CreateFsRequest {
   uint64 capacity = 17;
   uint32 recycle_time_hour = 18;
   PartitionType partition_type = 19;
-  uint32 expect_mds_num = 20; // for hash partition
+  uint32 expect_mds_num = 20;  // for hash partition
   repeated uint64 candidate_mds_ids = 21;
 }
 
@@ -793,7 +799,7 @@ message BatchMkNodResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode parent_inode = 10;
-  repeated Inode inodes = 11;  
+  repeated Inode inodes = 11;
 }
 
 message MkDirRequest {
@@ -810,7 +816,6 @@ message MkDirRequest {
   uint64 parent = 18;
   uint64 rdev = 19;
 }
-
 
 message MkDirResponse {
   ResponseInfo info = 1;
@@ -906,7 +911,6 @@ message FileSession {
   uint64 expire_time_s = 11;
 }
 
-
 message OpenRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -944,7 +948,7 @@ message ReleaseResponse {
   dingofs.pb.error.Error error = 2;
 }
 
-message  FlushFileRequest {
+message FlushFileRequest {
   RequestInfo info = 1;
   Context context = 2;
 
@@ -955,7 +959,7 @@ message  FlushFileRequest {
   uint64 data_version = 15;
 }
 
-message  FlushFileResponse {
+message FlushFileResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
@@ -1304,7 +1308,7 @@ message CompactChunkRequest {
 
   uint32 end_pos = 16;
   uint64 end_slice_id = 17;
-  
+
   repeated Slice new_slices = 18;
 }
 
@@ -1418,9 +1422,13 @@ message NotifyBuddyRequest {
     TYPE_DELETE_DIR_QUOTA = 4;
   }
 
-  message RefreshFsInfo { string fs_name = 1; }
+  message RefreshFsInfo {
+    string fs_name = 1;
+  }
 
-  message RefreshInode { Inode inode = 1; }
+  message RefreshInode {
+    Inode inode = 1;
+  }
 
   message CleanPartitionCache {
     uint32 fs_id = 1;
@@ -1474,8 +1482,12 @@ message FsOpLog {
   }
 
   message CreateFs {}
-  message JoinFs { repeated uint64 mds_ids = 1; }
-  message QuitFs { repeated uint64 mds_ids = 1; }
+  message JoinFs {
+    repeated uint64 mds_ids = 1;
+  }
+  message QuitFs {
+    repeated uint64 mds_ids = 1;
+  }
   message QuitAndJoinFs {
     repeated uint64 quit_mds_ids = 1;
     repeated uint64 join_mds_ids = 2;
@@ -1569,7 +1581,7 @@ message ReweightMemberResponse {
 message ListMembersRequest {
   RequestInfo info = 1;
 
-  optional string group_name = 2; // if not set, list all members
+  optional string group_name = 2;  // if not set, list all members
 };
 
 message ListMembersResponse {
@@ -1608,7 +1620,9 @@ message LeaveCacheGroupResponse {
   dingofs.pb.error.Error error = 2;
 };
 
-message ListGroupsRequest { RequestInfo info = 1; };
+message ListGroupsRequest {
+  RequestInfo info = 1;
+};
 
 message ListGroupsResponse {
   ResponseInfo info = 1;
