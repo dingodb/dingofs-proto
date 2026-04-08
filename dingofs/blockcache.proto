@@ -29,15 +29,18 @@ enum BlockCacheErrCode {
 };
 
 message BlockKey {
-    required uint64 fs_id = 1;
-    required uint64 ino = 2;
-    required uint64 id = 3;
-    required uint64 index = 4;
-    required uint64 version = 5;
+    required uint64 id = 1;
+    required uint32 index = 2;
+    required uint32 size = 3;
+};
+
+message BlockContext {
+    required BlockKey key = 1;
+    required uint32 fs_id = 2;
 };
 
 message PutRequest {
-    required BlockKey block_key = 1;
+    required BlockContext block_ctx = 1;
     required uint64 block_size = 2;
 };
 
@@ -46,7 +49,7 @@ message PutResponse {
 };
 
 message RangeRequest {
-    required BlockKey block_key = 1;
+    required BlockContext block_ctx = 1;
     required uint64 block_size = 2;
     required uint64 offset = 3;
     required uint64 length = 4;
@@ -58,7 +61,7 @@ message RangeResponse {
 };
 
 message CacheRequest {
-    required BlockKey block_key = 1;
+    required BlockContext block_ctx = 1;
     required uint64 block_size = 2;
 };
 
@@ -67,7 +70,7 @@ message CacheResponse {
 };
 
 message PrefetchRequest {
-    required BlockKey block_key = 1;
+    required BlockContext block_ctx = 1;
     required uint64 block_size = 2;
 };
 
