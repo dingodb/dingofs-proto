@@ -203,16 +203,16 @@ message FsInfo {
 }
 
 message Slice {
-    // slice ID (globally unique)
-    uint64 id   = 1;
-    // start byte position within the owning chunk (= file_offset % ChunkSize)
-    uint32 pos  = 2;
-    // total physical data size of the slice (determines number of blocks)
-    uint32 size = 3;
-    // read offset within the slice physical data (core for CopyFileRange/Clone)
-    uint32 off  = 4;
-    // logical length of this mapping
-    uint32 len  = 5;
+  // slice ID (globally unique)
+  uint64 id = 1;
+  // start byte position within the owning chunk (= file_offset % ChunkSize)
+  uint32 pos = 2;
+  // total physical data size of the slice (determines number of blocks)
+  uint32 size = 3;
+  // read offset within the slice physical data (core for CopyFileRange/Clone)
+  uint32 off = 4;
+  // logical length of this mapping
+  uint32 len = 5;
 }
 
 message Chunk {
@@ -1269,23 +1269,13 @@ message FallocateResponse {
 }
 
 message TrashSlice {
-  message Range {
-    // file offset
-    uint64 offset = 1;
-    // file logic length
-    uint64 len = 2;
-    uint64 compaction_version = 3;
-  }
-
   uint32 fs_id = 1;
   uint64 ino = 2;
   uint64 chunk_index = 3;
-  uint64 slice_id = 4;
   uint64 block_size = 5;
   uint64 chunk_size = 6;
 
-  bool is_partial = 7;
-  repeated Range ranges = 8;
+  Slice slice = 10;
 }
 
 message TrashSliceList {
