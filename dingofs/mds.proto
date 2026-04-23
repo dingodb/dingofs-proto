@@ -281,6 +281,16 @@ message Inode {
   repeated string shard_boundaries = 31;
 }
 
+message AttrMutation {
+  uint64 ino = 1;
+  uint32 index = 2;
+  uint64 ctime = 3;
+  uint64 mtime = 4;
+  uint64 atime = 5;
+
+  uint64 delta_version = 10;
+}
+
 message RequestInfo {
   // as trace id
   string request_id = 1;
@@ -1418,6 +1428,7 @@ message NotifyBuddyRequest {
 
   message RefreshInode {
     Inode inode = 1;
+    AttrMutation attr_mutation = 2;
   }
 
   message CleanPartitionCache {
@@ -1449,6 +1460,8 @@ message NotifyBuddyRequest {
       SetDirQuota set_dir_quota = 103;
       DeleteDirQuota delete_dir_quota = 104;
     }
+
+    string reason = 110;
   }
 
   // notify id
