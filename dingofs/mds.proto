@@ -224,6 +224,16 @@ message Slice {
   uint32 len = 5;
 }
 
+message SliceRef {
+  uint64 id = 1;
+
+  uint32 size = 2;
+
+  int64 ref_count = 3;
+
+  repeated uint64 inos = 4;
+}
+
 message Chunk {
   // chunk index
   uint32 index = 1;
@@ -300,6 +310,12 @@ message Inode {
   uint64 version = 30;
 
   repeated string shard_boundaries = 31;
+
+  // copy file range source file may be deleted,
+  // but its slices still exist, so we need to know whether the file is shared
+  // by multiple inodes, if true, we can't delete the slice when gc delfile, and
+  // need to add reference counting for slice
+  bool shared_slice = 40;
 }
 
 message AttrMutation {
@@ -1289,6 +1305,29 @@ message WriteSliceResponse {
   repeated Chunk chunks = 11;
 }
 
+message CopyFileRangeRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint32 fs_id = 10;
+  uint64 src_ino = 11;
+  uint64 src_off = 12;
+
+  uint64 dst_ino = 13;
+  uint64 dst_off = 14;
+
+  uint64 len = 15;
+  uint32 flags = 16;
+}
+
+message CopyFileRangeResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  uint64 bytes_copied = 10;
+  Inode dst_inode = 11;
+}
+
 message ReadSliceRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -1772,6 +1811,7 @@ service MDSService {
   rpc AllocSliceId(AllocSliceIdRequest) returns (AllocSliceIdResponse);
   rpc WriteSlice(WriteSliceRequest) returns (WriteSliceResponse);
   rpc ReadSlice(ReadSliceRequest) returns (ReadSliceResponse);
+  rpc CopyFileRange(CopyFileRangeRequest) returns (CopyFileRangeResponse);
 
   // fallocate interface
   rpc Fallocate(FallocateRequest) returns (FallocateResponse);
