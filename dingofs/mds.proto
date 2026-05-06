@@ -954,6 +954,7 @@ message  FlushFileRequest {
   uint64 length = 13;
   bytes data = 14;
   uint64 data_version = 15;
+  bool is_final = 16;
 }
 
 message  FlushFileResponse {
