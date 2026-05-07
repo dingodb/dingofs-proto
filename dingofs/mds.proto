@@ -456,6 +456,9 @@ message CreateFsRequest {
   PartitionType partition_type = 19;
   uint32 expect_mds_num = 20;  // for hash partition
   repeated uint64 candidate_mds_ids = 21;
+  uint32 trash_days = 22;  // Trash retention days, 0 = disabled
+  // See FsInfo.immediate_trash_quota. Create-time only.
+  bool immediate_trash_quota = 23;
 }
 
 message CreateFsResponse {
@@ -463,9 +466,6 @@ message CreateFsResponse {
   dingofs.pb.error.Error error = 2;
 
   FsInfo fs_info = 10;
-  uint32 trash_days = 22;  // Trash retention days, 0 = disabled
-  // See FsInfo.immediate_trash_quota. Create-time only.
-  bool immediate_trash_quota = 23;
 }
 
 message MountFsRequest {
