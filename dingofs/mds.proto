@@ -273,15 +273,6 @@ message Dentry {
 
 }
 
-message TrashDentry {
-  Dentry dentry = 1;
-  // Quota-bearing ancestor chain captured at trash-move time, ordered from
-  // origin_parent up toward root. Set only on dentries inside a sub-trash
-  // bucket; empty on regular tree dentries and on trash dentries written
-  // before this feature (consumers fall back to walk-based debit).
-  repeated uint64 quota_chain = 2;
-}
-
 message Inode {
   uint32 fs_id = 1;
   uint64 ino = 2;
