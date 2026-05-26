@@ -209,6 +209,12 @@ message FsInfo {
   // Create-time only (not honored by UpdateFsInfo). Pre-feature filesystems
   // decode this as false and keep their existing deferred behavior.
   bool immediate_trash_quota = 52;
+
+  // When true
+  // - Client hashes username/groupname into reserved segment [10000, 2^32)
+  //   using FsInfo.uuid as salt.
+  // - Stored uid/gid in inode are internal IDs, not raw local values.
+  bool enable_uid_gid_map = 53;
 }
 
 message Slice {
@@ -428,8 +434,16 @@ message HeartbeatRequest {
 }
 
 message HeartbeatResponse {
+  message ClientReply {
+    uint64 last_fs_version = 1;
+  }
+
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
+
+  oneof reply {
+    ClientReply client = 11;
+  }
 }
 
 message GetMDSListRequest {
@@ -466,6 +480,7 @@ message CreateFsRequest {
   uint32 trash_days = 22;  // Trash retention days, 0 = disabled
   // See FsInfo.immediate_trash_quota. Create-time only.
   bool immediate_trash_quota = 23;
+  bool enable_uid_gid_map = 24;
 }
 
 message CreateFsResponse {
