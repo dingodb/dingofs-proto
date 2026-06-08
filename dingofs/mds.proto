@@ -203,11 +203,11 @@ message FsInfo {
 
   uint32 trash_days = 51;  // Trash retention days, 0 = disabled
 
-  // When true, UnLink/RmDir/rename-overwrite debit the parent's (and ancestors')
-  // per-dir quota immediately at trash-move time; RestoreFromTrash credits back.
-  // When false, per-dir quota debit is deferred to CleanTrashTask (GC).
-  // Create-time only (not honored by UpdateFsInfo). Pre-feature filesystems
-  // decode this as false and keep their existing deferred behavior.
+  // When true, UnLink/RmDir/rename-overwrite debit the parent's (and
+  // ancestors') per-dir quota immediately at trash-move time; RestoreFromTrash
+  // credits back. When false, per-dir quota debit is deferred to CleanTrashTask
+  // (GC). Create-time only (not honored by UpdateFsInfo). Pre-feature
+  // filesystems decode this as false and keep their existing deferred behavior.
   bool immediate_trash_quota = 52;
 
   // When true
@@ -276,7 +276,6 @@ message Dentry {
   string name = 4;
   uint32 flag = 5;
   FileType type = 6;
-
 }
 
 message Inode {
@@ -580,9 +579,9 @@ message RestoreFromTrashRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  uint64 trash_parent = 11;      // sub_trash_ino (hour bucket)
-  string trash_name = 12;        // trash entry name; encodes orig parent+ino+name
-  uint32 uid = 13;               // caller uid; only root (0) is permitted
+  uint64 trash_parent = 11;  // sub_trash_ino (hour bucket)
+  string trash_name = 12;    // trash entry name; encodes orig parent+ino+name
+  uint32 uid = 13;           // caller uid; only root (0) is permitted
   // If true, allow the destination parent (parsed from trash_name) to be a
   // directory currently residing in trash — used by tree-rebuild mode to graft
   // entries onto their also-trashed parent within the hour bucket.
@@ -1042,6 +1041,7 @@ message FlushFileRequest {
   uint64 length = 13;
   bytes data = 14;
   uint64 data_version = 15;
+  bool is_final = 16;
 }
 
 message FlushFileResponse {
@@ -1771,7 +1771,8 @@ service MDSService {
   rpc GetFsInfo(GetFsInfoRequest) returns (GetFsInfoResponse);
   rpc ListFsInfo(ListFsInfoRequest) returns (ListFsInfoResponse);
   rpc UpdateFsInfo(UpdateFsInfoRequest) returns (UpdateFsInfoResponse);
-  rpc RestoreFromTrash(RestoreFromTrashRequest) returns (RestoreFromTrashResponse);
+  rpc RestoreFromTrash(RestoreFromTrashRequest)
+      returns (RestoreFromTrashResponse);
 
   // dentry interface
   rpc GetDentry(GetDentryRequest) returns (GetDentryResponse);
