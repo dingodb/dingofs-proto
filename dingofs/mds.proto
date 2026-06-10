@@ -185,7 +185,7 @@ message FsInfo {
   uint64 chunk_size = 8;
   repeated MountPoint mount_points = 9;
   PartitionPolicy partition_policy = 10;
-  bool enable_sum_in_dir = 12;  // enable sum in dir
+  bool enable_dir_stats = 12;  // enable per-directory usage statistics
   string owner = 13;
   string uuid = 16;
   FsExtra extra = 20;
@@ -469,7 +469,7 @@ message CreateFsRequest {
   uint64 chunk_size = 12;
   FsType fs_type = 13;
   FsExtra fs_extra = 14;
-  bool enable_sum_in_dir = 15;
+  bool enable_dir_stats = 15;
   string owner = 16;
   uint64 capacity = 17;
   uint32 recycle_time_hour = 18;
@@ -686,6 +686,32 @@ message BatchGetXAttrResponse {
 
 // quota interface
 
+// per-directory single-level usage statistics (JuiceFS dir-stats style)
+message DirStat {
+  int64 length = 1;   // sum of direct child file logical lengths (FILE only)
+  int64 inodes = 2;   // number of direct children (excluding . and ..)
+  uint64 version = 3;
+  int64 dirs = 4;     // number of direct sub-directories (subset of inodes)
+}
+
+// recursive subtree summary
+message Summary {
+  uint64 length = 1;  // logical bytes
+  uint64 files = 2;
+  uint64 dirs = 3;
+}
+
+// hierarchical tree summary
+message TreeSummary {
+  uint64 ino = 1;
+  string path = 2;
+  FileType type = 3;
+  uint64 length = 4;  // logical bytes (recursive)
+  uint64 files = 5;
+  uint64 dirs = 6;
+  repeated TreeSummary children = 7;
+}
+
 message Quota {
   int64 max_bytes = 1;
   int64 max_inodes = 2;
@@ -787,6 +813,59 @@ message LoadDirQuotasResponse {
 
   map<uint64, Quota> quotas = 10;
 };
+
+message GetDirStatRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+  uint32 fs_id = 10;
+  uint64 ino = 11;
+}
+message GetDirStatResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+  DirStat dir_stat = 10;
+}
+
+message GetTreeSummaryRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+  uint32 fs_id = 10;
+  uint64 ino = 11;
+  uint32 depth = 12;
+  uint32 top_n = 13;
+  bool strict = 14;
+}
+message GetTreeSummaryResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+  TreeSummary tree = 10;
+}
+
+message SyncDirStatRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+  uint32 fs_id = 10;
+  uint64 ino = 11;
+  bool recursive = 12;
+  bool repair = 13;
+}
+// One directory whose stored dir-stat disagreed with a fresh recompute.
+// `want` is the recomputed (authoritative) value; `got` is the stored value
+// (zero when `found` is false, i.e. no stored record existed).
+message DirStatBreak {
+  uint64 ino = 1;
+  bool found = 2;
+  int64 want_inodes = 3;
+  int64 want_length = 4;
+  int64 got_inodes = 5;
+  int64 got_length = 6;
+}
+
+message SyncDirStatResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+  repeated DirStatBreak broken = 10;
+}
 
 // high level interface
 
@@ -1835,6 +1914,11 @@ service MDSService {
   rpc GetDirQuota(GetDirQuotaRequest) returns (GetDirQuotaResponse);
   rpc DeleteDirQuota(DeleteDirQuotaRequest) returns (DeleteDirQuotaResponse);
   rpc LoadDirQuotas(LoadDirQuotasRequest) returns (LoadDirQuotasResponse);
+
+  // dir stats interface
+  rpc GetDirStat(GetDirStatRequest) returns (GetDirStatResponse);
+  rpc GetTreeSummary(GetTreeSummaryRequest) returns (GetTreeSummaryResponse);
+  rpc SyncDirStat(SyncDirStatRequest) returns (SyncDirStatResponse);
 
   // fs statistics
   rpc SetFsStats(SetFsStatsRequest) returns (SetFsStatsResponse);
