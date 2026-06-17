@@ -13,7 +13,7 @@
 //  limitations under the License.
 //
 
-syntax="proto2";
+syntax="proto3";
 package dingofs.pb.cache;
 
 option cc_generic_services = true;
@@ -29,53 +29,65 @@ enum BlockCacheErrCode {
 };
 
 message BlockKey {
-    required uint64 id = 1;
-    required uint32 index = 2;
-    required uint32 size = 3;
+    uint64 id = 1;
+    uint32 index = 2;
+    uint32 size = 3;
 };
 
-message BlockContext {
-    required BlockKey key = 1;
-    required uint32 fs_id = 2;
+message TensorKey {
+    string model_name = 1;
+    uint32 world_size = 2;
+    uint32 worker_id = 3;
+    string chunk_hash = 4;
+    string dtype = 5;
+};
+
+message BlockHandle {
+    oneof key {
+        BlockKey block_key = 1;
+        TensorKey tensor_key = 2;
+    }
+    optional uint32 fs_id = 3;
 };
 
 message PutRequest {
-    required BlockContext block_ctx = 1;
-    required uint64 block_size = 2;
+    BlockHandle handle = 1;
+    uint64 block_size = 2;
 };
 
 message PutResponse {
- required BlockCacheErrCode status = 1;
+  BlockCacheErrCode status = 1;
 };
 
 message RangeRequest {
-    required BlockContext block_ctx = 1;
-    required uint64 block_size = 2;
-    required uint64 offset = 3;
-    required uint64 length = 4;
+    BlockHandle handle = 1;
+    uint64 block_size = 2;
+    uint64 offset = 3;
+    uint64 length = 4;
+    optional bool retrieve_storage = 5;
 };
 
 message RangeResponse {
- required BlockCacheErrCode status = 1;
- optional bool cache_hit = 2;
+ BlockCacheErrCode status = 1;
+ bool cache_hit = 2;
 };
 
 message CacheRequest {
-    required BlockContext block_ctx = 1;
-    required uint64 block_size = 2;
+    BlockHandle handle = 1;
+    uint64 block_size = 2;
 };
 
 message CacheResponse {
- required BlockCacheErrCode status = 1;
+  BlockCacheErrCode status = 1;
 };
 
 message PrefetchRequest {
-    required BlockContext block_ctx = 1;
-    required uint64 block_size = 2;
+    BlockHandle handle = 1;
+    uint64 block_size = 2;
 };
 
 message PrefetchResponse {
- required BlockCacheErrCode status = 1;
+  BlockCacheErrCode status = 1;
 };
 
 message PingRequest {};
