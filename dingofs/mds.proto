@@ -690,15 +690,7 @@ message BatchGetXAttrResponse {
 message DirStat {
   int64 length = 1;   // sum of direct child file logical lengths (FILE only)
   int64 inodes = 2;   // number of direct children (excluding . and ..)
-  uint64 version = 3;
-  int64 dirs = 4;     // number of direct sub-directories (subset of inodes)
-}
-
-// recursive subtree summary
-message Summary {
-  uint64 length = 1;  // logical bytes
-  uint64 files = 2;
-  uint64 dirs = 3;
+  int64 dirs = 3;     // number of direct sub-directories (subset of inodes)
 }
 
 // hierarchical tree summary
@@ -849,10 +841,11 @@ message SyncDirStatRequest {
   bool recursive = 12;
   bool repair = 13;
 }
+
 // One directory whose stored dir-stat disagreed with a fresh recompute.
 // `want` is the recomputed (authoritative) value; `got` is the stored value
 // (zero when `found` is false, i.e. no stored record existed).
-message DirStatBreak {
+message DirStatMismatch {
   uint64 ino = 1;
   bool found = 2;
   int64 want_inodes = 3;
@@ -864,7 +857,7 @@ message DirStatBreak {
 message SyncDirStatResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
-  repeated DirStatBreak broken = 10;
+  repeated DirStatMismatch mismatches = 10;
 }
 
 // high level interface
