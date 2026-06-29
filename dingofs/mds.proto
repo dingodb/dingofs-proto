@@ -1252,6 +1252,8 @@ message SetAttrResponse {
   Inode inode = 10;
   // whether the file is shrunk, mean length < old length
   bool shrink_file = 11;
+  bool expand_file = 12;
+  repeated Chunk chunks = 13;
 }
 
 message GetXAttrRequest {
@@ -1404,6 +1406,7 @@ message CopyFileRangeResponse {
 
   uint64 bytes_copied = 10;
   Inode dst_inode = 11;
+  repeated Chunk dst_chunks = 12;
 }
 
 message ReadSliceRequest {
@@ -1446,6 +1449,9 @@ message FallocateResponse {
   dingofs.pb.error.Error error = 2;
 
   Inode inode = 10;
+  bool shrink_file = 11;
+  bool expand_file = 12;
+  repeated Chunk chunks = 13;
 }
 
 message TrashSlice {
