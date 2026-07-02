@@ -1373,7 +1373,6 @@ message WriteSliceRequest {
   Context context = 2;
 
   uint32 fs_id = 10;
-  uint64 parent = 11;
   uint64 ino = 12;
 
   repeated DeltaSlice delta_slices = 15;
