@@ -688,9 +688,9 @@ message BatchGetXAttrResponse {
 
 // per-directory single-level usage statistics (JuiceFS dir-stats style)
 message DirStat {
-  int64 length = 1;   // sum of direct child file logical lengths (FILE only)
-  int64 inodes = 2;   // number of direct children (excluding . and ..)
-  int64 dirs = 3;     // number of direct sub-directories (subset of inodes)
+  int64 length = 1;  // sum of direct child file logical lengths (FILE only)
+  int64 inodes = 2;  // number of direct children (excluding . and ..)
+  int64 dirs = 3;    // number of direct sub-directories (subset of inodes)
 }
 
 // hierarchical tree summary
@@ -1340,7 +1340,9 @@ message RenameResponse {
 
   uint64 old_parent_version = 10;
   uint64 new_parent_version = 11;
-  repeated uint64 effected_inos = 12;
+  repeated uint64 effected_inos = 12;  // deprecated
+  uint64 child_ino = 13;
+  uint64 deleted_ino = 14;
 }
 
 message AllocSliceIdRequest {
