@@ -588,6 +588,16 @@ message RestoreFromTrashRequest {
   // Even when true, the server still rejects dst == kTrashInodeId or dst being
   // an hour bucket (parent == kTrashInodeId).
   bool allow_trash_parent = 14;
+  // Content carried inside a DIRECTORY entry being put back: the totals of
+  // its subtree as currently assembled in trash (tree-rebuild grafts), NOT
+  // counting the directory itself. The restore's per-dir quota credit to the
+  // live ancestor chain is enlarged by this amount, settling the trash-move
+  // debits of children that leave trash by riding along instead of via their
+  // own restore. Computed by the restore tool (dir-stats skeleton walk);
+  // consumed only when allow_trash_parent=false and the entry is a directory.
+  // Zero/absent keeps the plain one-hop credit (pre-carried behavior).
+  uint64 carried_bytes = 15;
+  uint64 carried_inodes = 16;
 }
 
 message RestoreFromTrashResponse {
