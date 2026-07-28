@@ -1350,9 +1350,10 @@ message RenameResponse {
 
   uint64 old_parent_version = 10;
   uint64 new_parent_version = 11;
-  repeated uint64 effected_inos = 12;  // deprecated
   uint64 child_ino = 13;
   uint64 deleted_ino = 14;
+  uint64 child_version = 15;
+  uint64 deleted_version = 16;
 }
 
 message AllocSliceIdRequest {
