@@ -1348,12 +1348,10 @@ message RenameResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
-  uint64 old_parent_version = 10;
-  uint64 new_parent_version = 11;
-  uint64 child_ino = 13;
-  uint64 deleted_ino = 14;
-  uint64 child_version = 15;
-  uint64 deleted_version = 16;
+  Inode old_parent_inode = 10;
+  Inode new_parent_inode = 11;
+  Inode child_inode = 12;
+  Inode deleted_inode = 13;
 }
 
 message AllocSliceIdRequest {
