@@ -1227,6 +1227,8 @@ message GetAttrRequest {
 
   uint32 fs_id = 10;
   uint64 ino = 11;
+
+  string reason = 20;
 }
 
 message GetAttrResponse {
