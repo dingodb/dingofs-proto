@@ -13,14 +13,65 @@
 // limitations under the License.
 
 syntax = "proto3";
-package dingofs.pb.cache;
+
+package dingofs.pb.cache.v2;
+
+import "dingofs/error.proto";
 
 option cc_generic_services = true;
-option go_package = "dingofs/proto/cache";
+option go_package = "dingofs/proto/cache/v2";
 
-message DebugCacheRequest {};
-message DebugCacheResponse {};
+message BlockHandle {
+  uint64 fs_id = 1;
+  uint64 id = 2;
+  uint32 index = 3;
+  uint32 size = 4;
+}
 
-service cache {
-  rpc default_method(DebugCacheRequest) returns (DebugCacheResponse);
+message PutRequest {
+  BlockHandle handle = 1;
+  bool stage = 2;
+}
+
+message PutResponse {
+  dingofs.pb.error.Errno status = 1;
+}
+
+message GetRequest {
+  BlockHandle handle = 1;
+  uint64 offset = 2;
+  uint32 length = 3;
+}
+
+message GetResponse {
+  dingofs.pb.error.Errno status = 1;
+}
+
+message PrefetchRequest {
+  BlockHandle handle = 1;
+}
+
+message PrefetchResponse {
+  dingofs.pb.error.Errno status = 1;
+}
+
+message PingRequest {}
+
+message PingResponse {}
+
+message GetNodeInfoRequest {}
+
+message GetNodeInfoResponse {
+  dingofs.pb.error.Errno status = 1;
+  string id = 2;
+  uint32 shards = 3;
+  bool rdma_enabled = 4;
+}
+
+service CacheService {
+  rpc Put(PutRequest) returns (PutResponse);
+  rpc Get(GetRequest) returns (GetResponse);
+  rpc Prefetch(PrefetchRequest) returns (PrefetchResponse);
+  rpc Ping(PingRequest) returns (PingResponse);
+  rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse);
 }
