@@ -300,7 +300,7 @@ message Inode {
   uint32 flags = 20;
   map<string, bytes> xattrs = 21;
 
-  bool maybe_tiny_file = 25;
+  reserved 25;
 
   // when change field, need to update version
   uint64 version = 30;
@@ -1086,8 +1086,8 @@ message OpenRequest {
   uint32 flags = 12;
   string session_id = 16;
   bool prefetch_chunk = 13;
-  bool prefetch_data = 15;
   repeated ChunkDescriptor chunk_descriptors = 14;
+  reserved 15;
 }
 
 message OpenResponse {
@@ -1096,8 +1096,7 @@ message OpenResponse {
 
   Inode inode = 11;
   repeated Chunk chunks = 12;
-  bytes data = 13;
-  uint64 data_version = 14;
+  reserved 13, 14;
 }
 
 message ReleaseRequest {
@@ -1121,8 +1120,7 @@ message FlushFileRequest {
   uint32 fs_id = 10;
   uint64 ino = 11;
   uint64 length = 13;
-  bytes data = 14;
-  uint64 data_version = 15;
+  reserved 14, 15;
 }
 
 message FlushFileResponse {
