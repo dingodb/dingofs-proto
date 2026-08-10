@@ -1121,6 +1121,14 @@ message FlushFileRequest {
   uint64 ino = 11;
   uint64 length = 13;
   reserved 14, 15;
+
+  // Length rollback on data-flush failure (see client docs/adr/0003):
+  // when rollback is true, MDS conditionally shrinks the file length to
+  // rollback_to_length, but only if the current persisted length satisfies
+  // rollback_to_length < current_length <= length. Otherwise it is a no-op
+  // (conservative for concurrent writers) and the current inode is returned.
+  bool rollback = 16;
+  uint64 rollback_to_length = 17;
 }
 
 message FlushFileResponse {
