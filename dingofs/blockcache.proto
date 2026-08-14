@@ -90,6 +90,14 @@ message PrefetchResponse {
   BlockCacheErrCode status = 1;
 };
 
+message DeleteRequest {
+    BlockHandle handle = 1;
+};
+
+message DeleteResponse {
+  BlockCacheErrCode status = 1;
+};
+
 message PingRequest {};
 
 message PingResponse {};
@@ -99,5 +107,6 @@ service BlockCacheService {
     rpc Range(RangeRequest) returns (RangeResponse);
     rpc Cache(CacheRequest) returns (CacheResponse);
     rpc Prefetch(PrefetchRequest) returns (PrefetchResponse);
+    rpc Delete(DeleteRequest) returns (DeleteResponse);
     rpc Ping(PingRequest) returns (PingResponse);
 };
