@@ -1087,7 +1087,6 @@ message OpenRequest {
   string session_id = 16;
   bool prefetch_chunk = 13;
   repeated ChunkDescriptor chunk_descriptors = 14;
-  reserved 15;
 }
 
 message OpenResponse {
@@ -1096,7 +1095,6 @@ message OpenResponse {
 
   Inode inode = 11;
   repeated Chunk chunks = 12;
-  reserved 13, 14;
 }
 
 message ReleaseRequest {
@@ -1120,18 +1118,30 @@ message FlushFileRequest {
   uint32 fs_id = 10;
   uint64 ino = 11;
   uint64 length = 13;
-  reserved 14, 15;
-
-  // Length rollback on data-flush failure (see client docs/adr/0003):
-  // when rollback is true, MDS conditionally shrinks the file length to
-  // rollback_to_length, but only if the current persisted length satisfies
-  // rollback_to_length < current_length <= length. Otherwise it is a no-op
-  // (conservative for concurrent writers) and the current inode is returned.
-  bool rollback = 16;
-  uint64 rollback_to_length = 17;
 }
 
 message FlushFileResponse {
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  Inode inode = 10;
+}
+
+message RollbackFileRequest {
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint32 fs_id = 10;
+  uint64 ino = 11;
+  // conditional length rollback (ADR-0003): shrink to rollback_to_length iff
+  // rollback_to_length < current length <= last_write_length. Otherwise it is
+  // a no-op (conservative for concurrent writers) and the current inode is
+  // returned.
+  uint64 last_write_length = 12;
+  uint64 rollback_to_length = 13;
+}
+
+message RollbackFileResponse {
   ResponseInfo info = 1;
   dingofs.pb.error.Error error = 2;
 
@@ -1893,6 +1903,7 @@ service MDSService {
   rpc Open(OpenRequest) returns (OpenResponse);
   rpc Release(ReleaseRequest) returns (ReleaseResponse);
   rpc FlushFile(FlushFileRequest) returns (FlushFileResponse);
+  rpc RollbackFile(RollbackFileRequest) returns (RollbackFileResponse);
 
   rpc Link(LinkRequest) returns (LinkResponse);
   rpc UnLink(UnLinkRequest) returns (UnLinkResponse);
