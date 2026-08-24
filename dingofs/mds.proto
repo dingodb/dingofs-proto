@@ -1452,6 +1452,32 @@ message ReadSliceResponse {
   repeated Chunk chunks = 10;
 }
 
+message BatchReadSliceRequest {
+  message Entry {
+    uint64 ino = 1;
+    uint32 index = 2;
+    uint64 version = 3;
+  }
+
+  RequestInfo info = 1;
+  Context context = 2;
+
+  uint32 fs_id = 10;
+  repeated Entry entries = 11;
+}
+
+message BatchReadSliceResponse {
+  message Entry {
+    uint64 ino = 1;
+    Chunk chunk = 2;
+  }
+
+  ResponseInfo info = 1;
+  dingofs.pb.error.Error error = 2;
+
+  repeated Entry entries = 10;
+}
+
 message FallocateRequest {
   RequestInfo info = 1;
   Context context = 2;
@@ -1620,7 +1646,7 @@ message NotifyBuddyRequest {
   enum Type {
     TYPE_REFRESH_FS_INFO = 0;
     TYPE_REFRESH_INODE = 1;
-    TYPE_CLEAN_PARTITION_CACHE = 2;
+    TYPE_REFRESH_PARTITION = 2;
     TYPE_SET_DIR_QUOTA = 3;
     TYPE_DELETE_DIR_QUOTA = 4;
   }
@@ -1634,7 +1660,7 @@ message NotifyBuddyRequest {
     AttrMutation attr_mutation = 2;
   }
 
-  message CleanPartitionCache {
+  message RefreshPartition {
     uint32 fs_id = 1;
     uint64 ino = 2;
     uint64 version = 3;
@@ -1659,7 +1685,7 @@ message NotifyBuddyRequest {
     oneof payload {
       RefreshFsInfo refresh_fs_info = 100;
       RefreshInode refresh_inode = 101;
-      CleanPartitionCache clean_partition_cache = 102;
+      RefreshPartition refresh_partition = 102;
       SetDirQuota set_dir_quota = 103;
       DeleteDirQuota delete_dir_quota = 104;
     }
@@ -1924,6 +1950,7 @@ service MDSService {
   rpc AllocSliceId(AllocSliceIdRequest) returns (AllocSliceIdResponse);
   rpc WriteSlice(WriteSliceRequest) returns (WriteSliceResponse);
   rpc ReadSlice(ReadSliceRequest) returns (ReadSliceResponse);
+  rpc BatchReadSlice(BatchReadSliceRequest) returns (BatchReadSliceResponse);
   rpc CopyFileRange(CopyFileRangeRequest) returns (CopyFileRangeResponse);
 
   // fallocate interface
