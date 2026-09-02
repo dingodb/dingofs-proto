@@ -14,12 +14,63 @@
 
 syntax = "proto3";
 
-package dingofs.pb.cache.v2;
+package dingofs.pb.blockcache;
 
 import "dingofs/error.proto";
+import "google/protobuf/descriptor.proto";
 
 option cc_generic_services = true;
-option go_package = "dingofs/proto/cache/v2";
+option go_package = "dingofs/proto/blockcache";
+
+enum Opcode {
+  OPCODE_UNSPECIFIED = 0;
+  OPCODE_PUT = 1;
+  OPCODE_GET = 2;
+  OPCODE_PREFETCH = 3;
+  OPCODE_DELETE = 4;
+  OPCODE_PING = 5;
+  OPCODE_GET_NODE_INFO = 6;
+}
+
+extend google.protobuf.MethodOptions {
+  Opcode opcode = 50000;
+}
+
+enum ReplyCode {
+  REPLY_OK = 0;
+  REPLY_BAD_OPCODE = 65281;
+  REPLY_HANDLER_ERROR = 65282;
+  REPLY_TOO_LARGE = 65283;
+  REPLY_BAD_REQUEST = 65284;
+}
+
+message QueuePairInfo {
+  uint32 qpn = 1;
+  uint32 psn = 2;
+  uint32 lid = 3;
+  uint32 port_num = 4;
+  uint32 mtu = 5;
+  bytes gid = 6;  // 16 bytes
+}
+
+message EndpointInfo {
+  uint32 version = 1;
+  uint32 shard = 2;
+  uint32 link_layer = 3;
+  uint32 rpc_credits = 4;
+  uint32 message_bytes = 5;
+  repeated QueuePairInfo queue_pair_infos = 6;
+}
+
+message HandshakeRequest {
+  fixed64 route_key = 1;
+  EndpointInfo endpoint_info = 2;
+}
+
+message HandshakeResponse {
+  dingofs.pb.error.Errno status = 1;
+  EndpointInfo endpoint_info = 2;
+}
 
 message BlockHandle {
   uint64 fs_id = 1;
@@ -29,46 +80,44 @@ message BlockHandle {
 }
 
 message PutRequest {
-  BlockHandle handle = 1;
-  bool stage = 2;
+  fixed64 route_key = 1;
+  BlockHandle handle = 2;
+  bool stage = 3;
 }
-
 message PutResponse {
   dingofs.pb.error.Errno status = 1;
 }
 
 message GetRequest {
-  BlockHandle handle = 1;
-  uint64 offset = 2;
-  uint32 length = 3;
+  fixed64 route_key = 1;
+  BlockHandle handle = 2;
+  uint64 offset = 3;
+  uint32 length = 4;
 }
-
 message GetResponse {
   dingofs.pb.error.Errno status = 1;
 }
 
 message PrefetchRequest {
-  BlockHandle handle = 1;
+  fixed64 route_key = 1;
+  BlockHandle handle = 2;
 }
-
 message PrefetchResponse {
   dingofs.pb.error.Errno status = 1;
 }
 
 message DeleteRequest {
-  BlockHandle handle = 1;
+  fixed64 route_key = 1;
+  BlockHandle handle = 2;
 }
-
 message DeleteResponse {
   dingofs.pb.error.Errno status = 1;
 }
 
 message PingRequest {}
-
 message PingResponse {}
 
 message GetNodeInfoRequest {}
-
 message GetNodeInfoResponse {
   dingofs.pb.error.Errno status = 1;
   string id = 2;
@@ -76,11 +125,21 @@ message GetNodeInfoResponse {
   bool rdma_enabled = 4;
 }
 
+service InfinibandService {
+  rpc Handshake(HandshakeRequest) returns (HandshakeResponse);
+}
+
 service CacheService {
-  rpc Put(PutRequest) returns (PutResponse);
-  rpc Get(GetRequest) returns (GetResponse);
-  rpc Prefetch(PrefetchRequest) returns (PrefetchResponse);
-  rpc Delete(DeleteRequest) returns (DeleteResponse);
-  rpc Ping(PingRequest) returns (PingResponse);
-  rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse);
+  rpc Put(PutRequest) returns (PutResponse) { option (opcode) = OPCODE_PUT; }
+  rpc Get(GetRequest) returns (GetResponse) { option (opcode) = OPCODE_GET; }
+  rpc Prefetch(PrefetchRequest) returns (PrefetchResponse) {
+    option (opcode) = OPCODE_PREFETCH;
+  }
+  rpc Delete(DeleteRequest) returns (DeleteResponse) {
+    option (opcode) = OPCODE_DELETE;
+  }
+  rpc Ping(PingRequest) returns (PingResponse) { option (opcode) = OPCODE_PING; }
+  rpc GetNodeInfo(GetNodeInfoRequest) returns (GetNodeInfoResponse) {
+    option (opcode) = OPCODE_GET_NODE_INFO;
+  }
 }
