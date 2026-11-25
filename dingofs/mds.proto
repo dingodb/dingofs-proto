@@ -215,6 +215,10 @@ message FsInfo {
   //   using FsInfo.uuid as salt.
   // - Stored uid/gid in inode are internal IDs, not raw local values.
   bool enable_uid_gid_map = 53;
+
+  // Set by DeleteFs(keep_data). GC recycles only the metadata of a deleted fs,
+  // the file data in the object store is left untouched.
+  bool keep_data = 54;
 }
 
 message Slice {
@@ -524,6 +528,11 @@ message DeleteFsRequest {
   // if true, delete fs even if it is mounted
   // if false, return error if it is mounted
   bool is_force = 11;
+  // only delete metadata, keep the file data in the object store
+  bool keep_data = 12;
+  // only valid with keep_data: clean metadata right now,
+  // otherwise it is cleaned by gc after recycle_time_hour
+  bool immediately = 13;
 }
 
 message DeleteFsResponse {
